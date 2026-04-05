@@ -91,3 +91,4 @@ val Typography.body_S_Regular
         letterSpacing = 0.5.sp
     )
 
+val Typography = Typography()

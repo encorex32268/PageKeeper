@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">PageKeeper</string>
+    <string name="book_card_favorite">BookCardFavorite</string>
+    <string name="book_card_finish">BookCardFinish</string>
+    <string name="book_card_share">BookCardShare</string>
+    <string name="book_card_delete">BookCardDelete</string>
 </resources>

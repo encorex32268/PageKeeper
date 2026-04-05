@@ -12,13 +12,13 @@ import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
     primary = Primary,
-    secondary = Icons,
+    secondary = Secondary,
     tertiary = TabletBlockBG
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Primary,
-    secondary = Icons,
+    secondary = Secondary,
     tertiary = TabletBlockBG
 
 )
