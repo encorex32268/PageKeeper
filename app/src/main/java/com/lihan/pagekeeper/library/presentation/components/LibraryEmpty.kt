@@ -1,6 +1,5 @@
 package com.lihan.pagekeeper.library.presentation.components
 
-import android.widget.TextClock
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,11 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.pagekeeper.R
 import com.lihan.pagekeeper.core.presentation.ImportBook
-import com.lihan.pagekeeper.core.presentation.components.PKCircularProgressIndicator
+import com.lihan.pagekeeper.core.presentation.design_system.PKCircularProgressIndicator
 import com.lihan.pagekeeper.core.presentation.design_system.buttons.PKButton
 import com.lihan.pagekeeper.core.presentation.ui.theme.BGActive
 import com.lihan.pagekeeper.core.presentation.ui.theme.PageKeeperTheme
