@@ -4,4 +4,15 @@
     <string name="book_card_finish">BookCardFinish</string>
     <string name="book_card_share">BookCardShare</string>
     <string name="book_card_delete">BookCardDelete</string>
+    <string name="library">Library</string>
+    <string name="your_library_is_empty">Your library is empty</string>
+    <string name="your_library_is_empty_description">Import your first book to start\nbuilding your library</string>
+    <string name="import_book">Import Book</string>
+    <string name="unsupported_file_dialog_title">Unsupported file format</string>
+    <string name="unsupported_file_dialog_description">Please select a book in FB2 format.</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="delete_item">Delete \“%1$s\”?</string>
+    <string name="delete_description">This action will remove the book from your library.</string>
 </resources>

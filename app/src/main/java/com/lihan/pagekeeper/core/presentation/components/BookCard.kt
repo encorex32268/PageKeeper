@@ -56,6 +56,7 @@ import kotlin.random.Random
 fun BookCard(
     title: String,
     author: String,
+    imageUrl: String?,
     onCheckedChange: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier,
     isFavorite: Boolean = false,
@@ -170,6 +171,7 @@ private fun BookCardPreview() {
                 isSelected = Random.nextBoolean(),
                 isFavorite = Random.nextBoolean(),
                 isFinished = Random.nextBoolean(),
+                imageUrl = ""
             )
             BookCard(
                 title = "Title2",
@@ -178,7 +180,8 @@ private fun BookCardPreview() {
                 isSelected = Random.nextBoolean(),
                 isFavorite = Random.nextBoolean(),
                 isFinished = Random.nextBoolean(),
-                isSelectMode = true
+                isSelectMode = true,
+                imageUrl = null
             )
         }
     }

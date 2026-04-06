@@ -34,7 +34,7 @@ val Typography.title_L_Bold
         fontWeight = FontWeight.Bold,
         fontSize = 25.sp,
         lineHeight = 30.sp,
-        letterSpacing = 0.5.sp
+
     )
 
 val Typography.title_M_Medium
@@ -43,7 +43,7 @@ val Typography.title_M_Medium
         fontWeight = FontWeight.Medium,
         fontSize = 22.sp,
         lineHeight = 28.sp,
-        letterSpacing = 0.5.sp
+
     )
 
 val Typography.title_S_Medium
@@ -52,7 +52,7 @@ val Typography.title_S_Medium
         fontWeight = FontWeight.Medium,
         fontSize = 17.sp,
         lineHeight = 20.sp,
-        letterSpacing = 0.5.sp
+
     )
 
 val Typography.body_L_Regular
@@ -61,7 +61,7 @@ val Typography.body_L_Regular
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+
     )
 
 val Typography.body_M_Medium
@@ -70,7 +70,7 @@ val Typography.body_M_Medium
         fontWeight = FontWeight.Normal,
         fontSize = 15.sp,
         lineHeight = 18.sp,
-        letterSpacing = 0.5.sp
+
     )
 
 val Typography.body_M_Regular
@@ -79,7 +79,7 @@ val Typography.body_M_Regular
         fontWeight = FontWeight.Normal,
         fontSize = 15.sp,
         lineHeight = 18.sp,
-        letterSpacing = 0.5.sp
+
     )
 
 val Typography.body_S_Regular
@@ -88,7 +88,7 @@ val Typography.body_S_Regular
         fontWeight = FontWeight.Normal,
         fontSize = 13.sp,
         lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+
     )
 
 val Typography = Typography()

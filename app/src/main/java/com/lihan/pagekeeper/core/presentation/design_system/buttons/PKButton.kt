@@ -1,7 +1,9 @@
 package com.lihan.pagekeeper.core.presentation.design_system.buttons
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -38,7 +40,8 @@ fun PKButton(
             containerColor = Primary,
             contentColor = BGMain
         ),
-        shape = shape
+        shape = shape,
+        contentPadding = PaddingValues(vertical = 16.dp, horizontal = 24.dp)
     ) {
         if (leadingIcon != null){
             leadingIcon()

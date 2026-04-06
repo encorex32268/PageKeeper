@@ -46,3 +46,6 @@ val Close: ImageVector
 
 val ArrowLeft: ImageVector
     @Composable get() = ImageVector.vectorResource(R.drawable.arrow_left)
+
+val ImportBook: ImageVector
+    @Composable get() = ImageVector.vectorResource(R.drawable.import_book)
