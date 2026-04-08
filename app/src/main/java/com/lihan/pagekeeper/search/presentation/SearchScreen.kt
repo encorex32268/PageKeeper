@@ -1,24 +1,24 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.lihan.pagekeeper.search.presentation
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -30,13 +30,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lihan.pagekeeper.R
 import com.lihan.pagekeeper.core.presentation.ArrowLeft
 import com.lihan.pagekeeper.core.presentation.Close
+import com.lihan.pagekeeper.core.presentation.components.BookSearchBar
+import com.lihan.pagekeeper.core.presentation.components.BookSearchItem
 import com.lihan.pagekeeper.core.presentation.ui.theme.Divider
 import com.lihan.pagekeeper.core.presentation.ui.theme.Icons
 import com.lihan.pagekeeper.core.presentation.ui.theme.PageKeeperTheme
 import com.lihan.pagekeeper.core.presentation.ui.theme.TextSecondary
 import com.lihan.pagekeeper.core.presentation.ui.theme.title_M_Medium
-import com.lihan.pagekeeper.search.presentation.components.BookSearchBar
-import com.lihan.pagekeeper.search.presentation.components.BookSearchItem
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -82,47 +82,46 @@ private fun SearchScreen(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(72.dp)
-                    .padding(horizontal = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                IconButton(
-                    onClick = {
-                        onAction(SearchAction.OnBackClick)
-                    }
-                ) {
-                    Icon(
-                        imageVector = ArrowLeft,
-                        contentDescription = null,
-                        tint = Icons
-                    )
-                }
-                BookSearchBar(
-                    modifier = Modifier.weight(1f),
-                    textFieldState = state.searchTextFieldState,
-                    placeholder = stringResource(R.string.search_bar_placeholder),
-                    onDone = {
-                        onAction(SearchAction.OnDoneClick)
-                    }
-                )
-                if (state.searchTextFieldState.text.isNotEmpty()){
+            TopAppBar(
+                navigationIcon = {
                     IconButton(
                         onClick = {
-                            onAction(SearchAction.OnCloseClick)
+                            onAction(SearchAction.OnBackClick)
                         }
                     ) {
                         Icon(
-                            imageVector = Close,
+                            imageVector = ArrowLeft,
                             contentDescription = null,
                             tint = Icons
                         )
                     }
+
+                },
+                title = {
+                    BookSearchBar(
+                        textFieldState = state.searchTextFieldState,
+                        placeholder = stringResource(R.string.search_bar_placeholder),
+                        onDone = {
+                            onAction(SearchAction.OnDoneClick)
+                        }
+                    )
+                },
+                actions = {
+                    if (state.searchTextFieldState.text.isNotEmpty()){
+                        IconButton(
+                            onClick = {
+                                onAction(SearchAction.OnCloseClick)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Close,
+                                contentDescription = null,
+                                tint = Icons
+                            )
+                        }
+                    }
                 }
-            }
+            )
             HorizontalDivider(
                 color = Divider,
                 thickness = 1.dp
@@ -165,7 +164,7 @@ private fun SearchScreenPreview() {
     PageKeeperTheme {
         SearchScreen(
             state = SearchState(
-                searchTextFieldState = TextFieldState(initialText = "Herry")
+                searchTextFieldState = TextFieldState(initialText = "")
             ),
             onAction = {}
         )

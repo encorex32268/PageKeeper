@@ -1,5 +1,7 @@
 package com.lihan.pagekeeper.core.presentation.navigation
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -7,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.captionBarPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,7 +45,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.lihan.pagekeeper.R
+import com.lihan.pagekeeper.core.domain.Route
 import com.lihan.pagekeeper.core.presentation.ImportBook
 import com.lihan.pagekeeper.core.presentation.Menu
 import com.lihan.pagekeeper.core.presentation.MenuExpand
@@ -59,16 +65,24 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AdaptiveLayout(
+    currentDeviceConfiguration: DeviceConfiguration,
+    navController: NavController,
     drawerState: DrawerState,
     content: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val currentDeviceConfiguration = fromWindowSizeClass(windowSizeClass)
-
     var selected by remember { mutableIntStateOf(0) }
 
     val scope = rememberCoroutineScope()
+
+    val filePick = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) {
+        if (it != null){
+            println("Get File: $it")
+        }
+    }
+
 
     when (currentDeviceConfiguration) {
         DeviceConfiguration.MOBILE_PORTRAIT -> {
@@ -84,8 +98,12 @@ fun AdaptiveLayout(
                     ){
                         DrawerContent(
                             selected = selected,
-                            onDrawerItemClick = {
-                                selected = it
+                            onDrawerItemClick = { index,route ->
+                                selected = index
+                                navController.navigate(route)
+                                scope.launch {
+                                    drawerState.close()
+                                }
                             },
                             onMenuCloseClick = {
                                 scope.launch {
@@ -93,7 +111,7 @@ fun AdaptiveLayout(
                                 }
                             },
                             onImportBookClick = {
-
+                                filePick.launch("application/xml")
                             }
                         )
                     }
@@ -104,7 +122,9 @@ fun AdaptiveLayout(
 
         else -> {
             Row(
-                modifier = modifier.fillMaxSize()
+                modifier = modifier
+                    .fillMaxSize()
+                    .captionBarPadding()
             ) {
                 Box(
                     modifier = Modifier
@@ -155,15 +175,21 @@ fun AdaptiveLayout(
                         PermanentDrawerSheet(Modifier.width(240.dp)) {
                             DrawerContent(
                                 selected = selected,
-                                onDrawerItemClick = {
-                                    selected = it
+                                onDrawerItemClick = { index,route ->
+                                    selected = index
+                                    navController.navigate(route)
+                                    scope.launch {
+                                        drawerState.close()
+                                    }
                                 },
                                 onMenuCloseClick = {
                                     scope.launch {
                                         drawerState.close()
                                     }
                                 },
-                                onImportBookClick = {}
+                                onImportBookClick = {
+                                    filePick.launch("application/xml")
+                                }
                             )
                         }
                     }
@@ -181,7 +207,7 @@ private fun DrawerContent(
     selected: Int,
     onImportBookClick: () -> Unit,
     onMenuCloseClick: () -> Unit,
-    onDrawerItemClick: (Int) -> Unit,
+    onDrawerItemClick: (Int, Route) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -229,7 +255,7 @@ private fun DrawerContent(
                     },
                     selected = isSelected,
                     onClick = {
-                        onDrawerItemClick(selected)
+                        onDrawerItemClick(selected,destination.route)
                     },
                     icon = {
                         Icon(
@@ -306,6 +332,8 @@ private fun NavigationRailContent(
 private fun AdaptiveScaffoldTabletPreview() {
     PageKeeperTheme {
         AdaptiveLayout(
+            currentDeviceConfiguration = DeviceConfiguration.MOBILE_PORTRAIT,
+            navController = rememberNavController(),
             drawerState = rememberDrawerState(initialValue = DrawerValue.Open),
             content = {
 
@@ -321,6 +349,8 @@ private fun AdaptiveScaffoldTabletPreview() {
 private fun AdaptiveScaffoldPreview() {
     PageKeeperTheme {
         AdaptiveLayout(
+            currentDeviceConfiguration = DeviceConfiguration.TABLET_PORTRAIT,
+            navController = rememberNavController(),
             drawerState = rememberDrawerState(initialValue = DrawerValue.Open),
             content = {
 

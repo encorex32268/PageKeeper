@@ -1,14 +1,11 @@
-package com.lihan.pagekeeper.search.presentation.components
+package com.lihan.pagekeeper.core.presentation.components
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +22,7 @@ fun BookSearchBar(
     textFieldState: TextFieldState,
     onDone: () -> Unit,
     modifier: Modifier = Modifier,
+    interactionSource: MutableInteractionSource?=null,
     placeholder: String?=null
 ) {
     BasicTextField(
@@ -50,6 +48,7 @@ fun BookSearchBar(
             onDone()
         },
         lineLimits = TextFieldLineLimits.SingleLine,
+        interactionSource = interactionSource,
         modifier = modifier
     )
 

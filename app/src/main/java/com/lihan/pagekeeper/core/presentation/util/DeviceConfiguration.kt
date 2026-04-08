@@ -11,6 +11,9 @@ enum class DeviceConfiguration {
     TABLET_LANDSCAPE,
     DESKTOP;
 
+    val isMobile: Boolean
+        get() = this == MOBILE_PORTRAIT
+
     companion object {
         /**
          *  ```
@@ -30,5 +33,6 @@ enum class DeviceConfiguration {
                 else -> DESKTOP
             }
         }
+
     }
 }

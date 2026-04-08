@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -36,6 +37,8 @@ import com.lihan.pagekeeper.core.presentation.ui.theme.title_L_Bold
 @Composable
 fun LibraryEmpty(
     isLoading: Boolean,
+    onImportBookClick: () -> Unit,
+    logoBackgroundColor: Color = BGActive,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -50,7 +53,7 @@ fun LibraryEmpty(
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .background(BGActive,CircleShape)
+                    .background(logoBackgroundColor,CircleShape)
                     .size(120.dp),
                 contentAlignment = Alignment.Center
             ){
@@ -78,7 +81,7 @@ fun LibraryEmpty(
             Spacer(Modifier.height(16.dp))
             PKButton(
                 text = stringResource(R.string.import_book),
-                onClick = {},
+                onClick = onImportBookClick,
                 leadingIcon = {
                     Icon(
                         imageVector = ImportBook,
@@ -102,7 +105,8 @@ private fun LibraryEmptyPreview() {
     PageKeeperTheme {
         LibraryEmpty(
             modifier = Modifier.fillMaxSize(),
-            isLoading = true
+            isLoading = true,
+            onImportBookClick = {}
         )
     }
 }

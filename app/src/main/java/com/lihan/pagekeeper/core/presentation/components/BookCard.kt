@@ -48,6 +48,10 @@ fun BookCard(
     author: String,
     imageUrl: String?,
     onCheckedChange: ((Boolean) -> Unit)?,
+    onFavoriteClick: () -> Unit,
+    onFinishClick: () -> Unit,
+    onShareClick: () -> Unit,
+    onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
     isFavorite: Boolean = false,
     isFinished: Boolean = false,
@@ -117,26 +121,26 @@ fun BookCard(
                 PKIconButton(
                     imageVector = if (isFavorite) StarFill else Star,
                     contentDescription = stringResource(R.string.book_card_favorite),
-                    onClick = {}
+                    onClick = onFavoriteClick
                 )
 
                 PKIconButton(
                     imageVector = if (isFinished) FlagFill else Flag ,
                     contentDescription = stringResource(R.string.book_card_finish),
-                    onClick = {}
+                    onClick = onFinishClick
                 )
 
                 PKIconButton(
                     imageVector = Share,
                     contentDescription = stringResource(R.string.book_card_share),
-                    onClick = {}
+                    onClick = onShareClick
                 )
                 Spacer(Modifier.weight(1f))
 
                 PKIconButton(
                     imageVector = TrashCan,
                     contentDescription = stringResource(R.string.book_card_delete),
-                    onClick = {}
+                    onClick = onDeleteClick
                 )
 
             }
@@ -161,7 +165,11 @@ private fun BookCardPreview() {
                 isSelected = Random.nextBoolean(),
                 isFavorite = Random.nextBoolean(),
                 isFinished = Random.nextBoolean(),
-                imageUrl = ""
+                imageUrl = "",
+                onShareClick = {},
+                onDeleteClick = {},
+                onFinishClick = {},
+                onFavoriteClick = {}
             )
             BookCard(
                 title = "Title2",
@@ -171,7 +179,11 @@ private fun BookCardPreview() {
                 isFavorite = Random.nextBoolean(),
                 isFinished = Random.nextBoolean(),
                 isSelectMode = true,
-                imageUrl = null
+                imageUrl = null,
+                onShareClick = {},
+                onDeleteClick = {},
+                onFinishClick = {},
+                onFavoriteClick = {}
             )
         }
     }

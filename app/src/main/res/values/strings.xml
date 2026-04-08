@@ -19,4 +19,7 @@
     <string name="no_results_found">No results found</string>
     <string name="favorite">Favorites</string>
     <string name="finished">Finished</string>
+    <string name="search">Search</string>
+    <string name="menu">Menu</string>
+    <string name="selected">%1$d selected</string>
 </resources>

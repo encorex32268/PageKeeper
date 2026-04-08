@@ -4,7 +4,7 @@ data class BookUi(
     val id: Int,
     val title: String,
     val author: String,
-    val imageUri: String?,
+    val imageUrl: String?,
     val isFavorite: Boolean,
     val isFinished: Boolean,
     val isSelected: Boolean

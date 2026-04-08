@@ -2,10 +2,11 @@
 
 package com.lihan.pagekeeper.library.presentation
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -17,11 +18,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lihan.pagekeeper.R
 import com.lihan.pagekeeper.core.presentation.Menu
 import com.lihan.pagekeeper.core.presentation.Search
@@ -34,9 +37,38 @@ import com.lihan.pagekeeper.core.presentation.ui.theme.TextPrimary
 import com.lihan.pagekeeper.core.presentation.ui.theme.title_M_Medium
 import com.lihan.pagekeeper.library.presentation.components.LibraryEmpty
 import com.lihan.pagekeeper.library.presentation.model.BookUi
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun LibraryScreenRoot(){
+fun LibraryScreenRoot(
+    menuClick: () -> Unit,
+    navigateToSearch: () -> Unit,
+    viewModel: LibraryViewModel = koinViewModel()
+){
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    val filePick = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) {
+        if (it != null){
+            println("Get File: $it")
+        }
+    }
+
+    LibraryScreen(
+        state = state,
+        onAction = { action ->
+            when(action){
+                LibraryAction.ImportBookClick -> {
+                    filePick.launch("application/xml")
+                }
+                LibraryAction.MenuClick -> menuClick()
+                LibraryAction.SearchClick -> navigateToSearch()
+                else -> Unit
+            }
+            viewModel.onAction(action)
+        }
+    )
 
 }
 
@@ -44,6 +76,7 @@ fun LibraryScreenRoot(){
 @Composable
 private fun LibraryScreen(
     state: LibraryState,
+    onAction: (LibraryAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -53,7 +86,6 @@ private fun LibraryScreen(
             modifier = Modifier
                 .background(BGMain)
                 .fillMaxSize()
-                .padding(top = it.calculateTopPadding() / 2)
         ) {
             CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -68,21 +100,25 @@ private fun LibraryScreen(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = {}
+                        onClick = {
+                            onAction(LibraryAction.MenuClick)
+                        }
                     ) {
                         Icon(
                             imageVector = Menu,
-                            contentDescription = "menu"
+                            contentDescription = stringResource(R.string.menu)
                         )
                     }
                 },
                 actions = {
                     IconButton(
-                        onClick = {}
+                        onClick = {
+                            onAction(LibraryAction.SearchClick)
+                        }
                     ) {
                         Icon(
                             imageVector = Search,
-                            contentDescription = "menu"
+                            contentDescription = stringResource(R.string.search)
                         )
                     }
                 }
@@ -98,13 +134,25 @@ private fun LibraryScreen(
                         BookCard(
                             title = bookUi.title,
                             author = bookUi.author,
-                            imageUrl = bookUi.imageUri,
+                            imageUrl = bookUi.imageUrl,
                             isFavorite = bookUi.isFavorite,
                             isFinished = bookUi.isFinished,
                             isSelected = bookUi.isSelected,
                             isSelectMode = state.isSelectMode,
                             onCheckedChange = {
-
+                                onAction(LibraryAction.ItemSelectClick(bookUi.id,bookUi.isSelected))
+                            },
+                            onFinishClick = {
+                                onAction(LibraryAction.ItemFinishedClick(bookUi.id))
+                            },
+                            onFavoriteClick = {
+                                onAction(LibraryAction.ItemFavoriteClick(bookUi.id))
+                            },
+                            onDeleteClick = {
+                                onAction(LibraryAction.ItemDeleteClick(bookUi.id))
+                            },
+                            onShareClick = {
+                                onAction(LibraryAction.ItemShareClick(bookUi.id))
                             }
                         )
                     }
@@ -116,7 +164,10 @@ private fun LibraryScreen(
     if (state.items.isEmpty()){
         LibraryEmpty(
             isLoading = state.isLoading,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            onImportBookClick = {
+                onAction(LibraryAction.ImportBookClick)
+            }
         )
     }
     if (state.isShowUnsupportedDialog){
@@ -125,16 +176,22 @@ private fun LibraryScreen(
             description = stringResource(R.string.unsupported_file_dialog_description),
             confirmText = stringResource(R.string.ok),
             onConfirm = {
-
+                onAction(LibraryAction.DismissUnsupportedFileDialog)
             }
         )
     }
     if (state.isShowDeleteDialog && state.selectedBookUi != null){
         DeleteAlertDialog(
             deleteItemTitle = state.selectedBookUi.title,
-            onCancel = {},
-            onDelete = {},
-            onDismiss = {}
+            onCancel = {
+                onAction(LibraryAction.DismissDeleteDialog)
+            },
+            onDelete = {
+                onAction(LibraryAction.ItemDeleteClick(state.selectedBookUi.id))
+            },
+            onDismiss = {
+                onAction(LibraryAction.DismissDeleteDialog)
+            }
         )
     }
 }
@@ -149,7 +206,7 @@ private fun LibraryScreenPreview() {
                     id = it,
                     title = "String",
                     author = "String2",
-                    imageUri = null,
+                    imageUrl = null,
                     isFavorite = true,
                     isFinished = false,
                     isSelected = true
@@ -159,11 +216,12 @@ private fun LibraryScreenPreview() {
         LibraryScreen(
             state = LibraryState(
                 isLoading = false,
-                isShowUnsupportedDialog = false,
+                isShowUnsupportedDialog = true,
                 items = bookUis,
                 selectedBookUi = bookUis.random(),
-                isShowDeleteDialog = true
-            )
+                isShowDeleteDialog = false
+            ),
+            onAction = {}
         )
     }
 }

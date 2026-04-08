@@ -7,10 +7,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.captionBarPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -21,7 +24,11 @@ import androidx.navigation.compose.rememberNavController
 import com.lihan.pagekeeper.core.domain.Route
 import com.lihan.pagekeeper.core.presentation.navigation.AdaptiveLayout
 import com.lihan.pagekeeper.core.presentation.ui.theme.PageKeeperTheme
+import com.lihan.pagekeeper.core.presentation.util.DeviceConfiguration.Companion.fromWindowSizeClass
 import com.lihan.pagekeeper.library.presentation.LibraryScreenRoot
+import com.lihan.pagekeeper.library.presentation.tablet.LibraryTabletScreen
+import com.lihan.pagekeeper.library.presentation.tablet.LibraryTabletState
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,8 +41,17 @@ class MainActivity : ComponentActivity() {
 
                 val scope = rememberCoroutineScope()
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+                val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+                val currentDeviceConfiguration = fromWindowSizeClass(windowSizeClass)
+
+
                 AdaptiveLayout(
-                    modifier = Modifier.fillMaxSize(),
+                    currentDeviceConfiguration = currentDeviceConfiguration,
+                    navController = navController,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .safeDrawingPadding(),
                     drawerState = drawerState,
                     content = {
                         NavHost(
@@ -43,7 +59,23 @@ class MainActivity : ComponentActivity() {
                             startDestination = Route.Library,
                         ) {
                             composable<Route.Library> {
-                                LibraryScreenRoot()
+                                if(currentDeviceConfiguration.isMobile){
+                                    LibraryScreenRoot(
+                                        menuClick = {
+                                            scope.launch {
+                                                drawerState.open()
+                                            }
+                                        },
+                                        navigateToSearch = {
+                                            navController.navigate(Route.Search)
+                                        }
+                                    )
+                                }else{
+                                    LibraryTabletScreen(
+                                        state = LibraryTabletState(),
+                                        onAction = {}
+                                    )
+                                }
                             }
                             composable<Route.Favorites> {
                                 Box(
@@ -63,6 +95,17 @@ class MainActivity : ComponentActivity() {
                                 ) {
                                     Text(
                                         text = "Finished"
+                                    )
+                                }
+                            }
+
+                            composable<Route.Search> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "Search"
                                     )
                                 }
                             }
