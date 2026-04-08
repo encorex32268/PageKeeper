@@ -12,6 +12,11 @@ enum class DeviceConfiguration {
     DESKTOP;
 
     companion object {
+        /**
+         *  ```
+         *  val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+         *  ```
+         */
         fun fromWindowSizeClass(windowSizeClass: WindowSizeClass): DeviceConfiguration {
             val widthClass = windowSizeClass.windowWidthSizeClass
             val heightClass = windowSizeClass.windowHeightSizeClass

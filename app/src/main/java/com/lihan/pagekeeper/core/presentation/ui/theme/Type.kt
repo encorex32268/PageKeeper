@@ -88,7 +88,15 @@ val Typography.body_S_Regular
         fontWeight = FontWeight.Normal,
         fontSize = 13.sp,
         lineHeight = 16.sp,
-
     )
 
 val Typography = Typography()
+
+
+val Typography.navigation_Large
+    get() = TextStyle(
+        fontFamily = Inter,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 16.sp,
+    )

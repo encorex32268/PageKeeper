@@ -38,6 +38,9 @@ val LibraryFill: ImageVector
 val Menu: ImageVector
     @Composable get() = ImageVector.vectorResource(R.drawable.menu)
 
+val MenuExpand: ImageVector
+    @Composable get() = ImageVector.vectorResource(R.drawable.menu_expand)
+
 val Search: ImageVector
     @Composable get() = ImageVector.vectorResource(R.drawable.search)
 
