@@ -1,5 +1,6 @@
 package com.lihan.pagekeeper.library.presentation
 
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -69,6 +70,17 @@ class LibraryViewModel: ViewModel() {
             }
 
             LibraryAction.ImportBookClick -> Unit
+            LibraryAction.CleanText -> {
+                state.value.searchTextField.clearText()
+                _state.update { it.copy(
+                    isSearching = false
+                ) }
+            }
+            LibraryAction.StartSearch -> {
+                _state.update { it.copy(
+                    isSearching = true
+                ) }
+            }
         }
     }
 

@@ -12,4 +12,6 @@ sealed interface LibraryAction {
     data class ItemSelectClick(val id: Int,val isSelected: Boolean): LibraryAction
     data object SelectModeChanged: LibraryAction
     data object ImportBookClick: LibraryAction
+    data object CleanText: LibraryAction
+    data object StartSearch: LibraryAction
 }

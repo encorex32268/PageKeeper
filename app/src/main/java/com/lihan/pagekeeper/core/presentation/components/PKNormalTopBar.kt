@@ -9,6 +9,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +21,7 @@ import com.lihan.pagekeeper.core.presentation.Search
 import com.lihan.pagekeeper.core.presentation.ui.theme.PageKeeperTheme
 import com.lihan.pagekeeper.core.presentation.ui.theme.TextPrimary
 import com.lihan.pagekeeper.core.presentation.ui.theme.title_M_Medium
+import com.lihan.pagekeeper.core.presentation.util.DeviceConfiguration
 
 @Composable
 fun PKNormalTopBar(
@@ -28,39 +30,46 @@ fun PKNormalTopBar(
     onSearchClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    CenterAlignedTopAppBar(
-        modifier = modifier,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent
-        ),
-        title = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.title_M_Medium,
-                color = TextPrimary
-            )
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = onMenuClick
-            ) {
-                Icon(
-                    imageVector = Menu,
-                    contentDescription = stringResource(R.string.menu)
-                )
-            }
-        },
-        actions = {
-            IconButton(
-                onClick = onSearchClick
-            ) {
-                Icon(
-                    imageVector = Search,
-                    contentDescription = stringResource(R.string.search)
-                )
-            }
-        }
+    val currentDeviceConfiguration = DeviceConfiguration.fromWindowSizeClass(
+        currentWindowAdaptiveInfo().windowSizeClass
     )
+
+    if (currentDeviceConfiguration.isMobile){
+        CenterAlignedTopAppBar(
+            modifier = modifier,
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent
+            ),
+            title = {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.title_M_Medium,
+                    color = TextPrimary
+                )
+            },
+            navigationIcon = {
+                IconButton(
+                    onClick = onMenuClick
+                ) {
+                    Icon(
+                        imageVector = Menu,
+                        contentDescription = stringResource(R.string.menu)
+                    )
+                }
+            },
+            actions = {
+                IconButton(
+                    onClick = onSearchClick
+                ) {
+                    Icon(
+                        imageVector = Search,
+                        contentDescription = stringResource(R.string.search)
+                    )
+                }
+            }
+        )
+
+    }
 
 }
 
