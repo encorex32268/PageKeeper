@@ -22,4 +22,9 @@
     <string name="search">Search</string>
     <string name="menu">Menu</string>
     <string name="selected">%1$d selected</string>
+    <string name="your_favorites_is_empty">Your favorites is empty</string>
+    <string name="your_favorites_is_empty_description">Books you add to Favorites will appear here.</string>
+    <string name="your_finished_is_empty">Your finished is empty</string>
+    <string name="your_finished_is_empty_description">Books you mark as Finished will appear here.</string>
+    <string name="favorites">Favorites</string>
 </resources>

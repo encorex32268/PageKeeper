@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,14 +36,15 @@ import com.lihan.pagekeeper.core.presentation.ui.theme.BGMain
 import com.lihan.pagekeeper.core.presentation.ui.theme.PageKeeperTheme
 import com.lihan.pagekeeper.core.presentation.ui.theme.TextPrimary
 import com.lihan.pagekeeper.core.presentation.ui.theme.title_M_Medium
-import com.lihan.pagekeeper.library.presentation.components.LibraryEmpty
+import com.lihan.pagekeeper.core.presentation.components.DataEmptyView
+import com.lihan.pagekeeper.core.presentation.components.PKNormalTopBar
 import com.lihan.pagekeeper.library.presentation.model.BookUi
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LibraryScreenRoot(
-    menuClick: () -> Unit,
-    navigateToSearch: () -> Unit,
+    onSearchClick: () -> Unit,
+    onMenuClick: () -> Unit,
     viewModel: LibraryViewModel = koinViewModel()
 ){
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -62,8 +64,8 @@ fun LibraryScreenRoot(
                 LibraryAction.ImportBookClick -> {
                     filePick.launch("application/xml")
                 }
-                LibraryAction.MenuClick -> menuClick()
-                LibraryAction.SearchClick -> navigateToSearch()
+                LibraryAction.MenuClick -> onMenuClick()
+                LibraryAction.SearchClick -> onSearchClick()
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -87,42 +89,16 @@ private fun LibraryScreen(
                 .background(BGMain)
                 .fillMaxSize()
         ) {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
-                title = {
-                    Text(
-                        text = stringResource(R.string.library),
-                        style = MaterialTheme.typography.title_M_Medium,
-                        color = TextPrimary
-                    )
+            PKNormalTopBar(
+                title = stringResource(R.string.library),
+                onMenuClick = {
+                    onAction(LibraryAction.MenuClick)
                 },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            onAction(LibraryAction.MenuClick)
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Menu,
-                            contentDescription = stringResource(R.string.menu)
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            onAction(LibraryAction.SearchClick)
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Search,
-                            contentDescription = stringResource(R.string.search)
-                        )
-                    }
+                onSearchClick = {
+                    onAction(LibraryAction.SearchClick)
                 }
             )
+
             if (state.items.isNotEmpty()){
                 LazyColumn(
                     modifier = Modifier.weight(1f)
@@ -162,12 +138,15 @@ private fun LibraryScreen(
 
     }
     if (state.items.isEmpty()){
-        LibraryEmpty(
+        DataEmptyView(
             isLoading = state.isLoading,
             modifier = Modifier.fillMaxSize(),
+            painter = painterResource(R.drawable.logo),
             onImportBookClick = {
                 onAction(LibraryAction.ImportBookClick)
-            }
+            },
+            title = stringResource(R.string.your_library_is_empty),
+            description = stringResource(R.string.your_library_is_empty_description)
         )
     }
     if (state.isShowUnsupportedDialog){

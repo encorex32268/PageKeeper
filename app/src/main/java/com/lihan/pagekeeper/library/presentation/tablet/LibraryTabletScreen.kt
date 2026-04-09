@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,7 +38,7 @@ import com.lihan.pagekeeper.core.presentation.ui.theme.TabletBlockBG
 import com.lihan.pagekeeper.core.presentation.ui.theme.TextSecondary
 import com.lihan.pagekeeper.core.presentation.ui.theme.title_M_Medium
 import com.lihan.pagekeeper.core.presentation.util.preview_provider.PreviewData
-import com.lihan.pagekeeper.library.presentation.components.LibraryEmpty
+import com.lihan.pagekeeper.core.presentation.components.DataEmptyView
 
 @Composable
 fun LibraryTabletScreen(
@@ -100,10 +101,13 @@ fun LibraryTabletScreen(
         }
         when{
             !state.isSearching && state.items.isEmpty() -> {
-                LibraryEmpty(
+                DataEmptyView(
                     isLoading = state.isLoading,
                     onImportBookClick = {},
-                    logoBackgroundColor = BGMain
+                    logoBackgroundColor = BGMain,
+                    painter = painterResource(R.drawable.logo),
+                    title = stringResource(R.string.your_library_is_empty),
+                    description = stringResource(R.string.your_library_is_empty_description)
                 )
             }
             state.isSearching -> {

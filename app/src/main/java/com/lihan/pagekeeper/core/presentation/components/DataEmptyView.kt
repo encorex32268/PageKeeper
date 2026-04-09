@@ -1,4 +1,4 @@
-package com.lihan.pagekeeper.library.presentation.components
+package com.lihan.pagekeeper.core.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,8 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,11 +38,14 @@ import com.lihan.pagekeeper.core.presentation.ui.theme.body_M_Regular
 import com.lihan.pagekeeper.core.presentation.ui.theme.title_L_Bold
 
 @Composable
-fun LibraryEmpty(
-    isLoading: Boolean,
-    onImportBookClick: () -> Unit,
-    logoBackgroundColor: Color = BGActive,
-    modifier: Modifier = Modifier
+fun DataEmptyView(
+    painter: Painter,
+    title: String,
+    description: String,
+    modifier: Modifier = Modifier,
+    onImportBookClick: (() -> Unit)?=null,
+    isLoading: Boolean = false,
+    logoBackgroundColor: Color = BGActive
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
@@ -59,36 +65,39 @@ fun LibraryEmpty(
             ){
                 Image(
                     modifier = Modifier.size(72.dp),
-                    painter = painterResource(R.drawable.logo),
+                    painter = painter,
                     contentDescription = null
                 )
             }
             Spacer(Modifier.height(16.dp))
             Text(
-                text = stringResource(R.string.your_library_is_empty),
+                text = title,
                 style = MaterialTheme.typography.title_L_Bold,
                 color = TextPrimary
             )
             Spacer(Modifier.height(8.dp))
             if (!isLoading){
                 Text(
-                    text = stringResource(R.string.your_library_is_empty_description),
+                    text = description,
                     style = MaterialTheme.typography.body_M_Regular,
                     color = TextSecondary,
                     textAlign = TextAlign.Center
                 )
             }
-            Spacer(Modifier.height(16.dp))
-            PKButton(
-                text = stringResource(R.string.import_book),
-                onClick = onImportBookClick,
-                leadingIcon = {
-                    Icon(
-                        imageVector = ImportBook,
-                        contentDescription = null
-                    )
-                }
-            )
+            if (onImportBookClick != null){
+                Spacer(Modifier.height(16.dp))
+                PKButton(
+                    text = stringResource(R.string.import_book),
+                    onClick = onImportBookClick,
+                    leadingIcon = {
+                        Icon(
+                            imageVector = ImportBook,
+                            contentDescription = null
+                        )
+                    }
+                )
+            }
+
         }
         if (isLoading){
             PKCircularProgressIndicator()
@@ -101,12 +110,15 @@ fun LibraryEmpty(
 
 @Preview(showSystemUi = true)
 @Composable
-private fun LibraryEmptyPreview() {
+private fun DataEmptyViewPreview() {
     PageKeeperTheme {
-        LibraryEmpty(
+        DataEmptyView(
+            title = stringResource(R.string.your_library_is_empty),
+            description = stringResource(R.string.your_library_is_empty_description),
             modifier = Modifier.fillMaxSize(),
-            isLoading = true,
-            onImportBookClick = {}
+            isLoading = false,
+            onImportBookClick = {},
+            painter = painterResource(R.drawable.logo)
         )
     }
 }

@@ -18,16 +18,23 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lihan.pagekeeper.core.domain.Route
+import com.lihan.pagekeeper.core.presentation.components.DataEmptyView
 import com.lihan.pagekeeper.core.presentation.navigation.AdaptiveLayout
 import com.lihan.pagekeeper.core.presentation.ui.theme.PageKeeperTheme
 import com.lihan.pagekeeper.core.presentation.util.DeviceConfiguration.Companion.fromWindowSizeClass
+import com.lihan.pagekeeper.favorites.presentation.FavoritesScreen
+import com.lihan.pagekeeper.finished.presentation.FinishedScreen
+import com.lihan.pagekeeper.library.presentation.LibraryAction
 import com.lihan.pagekeeper.library.presentation.LibraryScreenRoot
 import com.lihan.pagekeeper.library.presentation.tablet.LibraryTabletScreen
 import com.lihan.pagekeeper.library.presentation.tablet.LibraryTabletState
+import com.lihan.pagekeeper.search.presentation.SearchScreenRoot
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -61,12 +68,12 @@ class MainActivity : ComponentActivity() {
                             composable<Route.Library> {
                                 if(currentDeviceConfiguration.isMobile){
                                     LibraryScreenRoot(
-                                        menuClick = {
+                                        onMenuClick = {
                                             scope.launch {
                                                 drawerState.open()
                                             }
                                         },
-                                        navigateToSearch = {
+                                        onSearchClick = {
                                             navController.navigate(Route.Search)
                                         }
                                     )
@@ -78,36 +85,38 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                             composable<Route.Favorites> {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "Favorites"
-                                    )
-                                }
+                                FavoritesScreen(
+                                    onSearchClick = {
+                                        navController.navigate(Route.Search)
+                                    },
+                                    onMenuClick = {
+                                        scope.launch {
+                                            drawerState.open()
+                                        }
+                                    }
+                                )
                             }
 
                             composable<Route.Finished> {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "Finished"
-                                    )
-                                }
+                                FinishedScreen(
+                                    onSearchClick = {
+                                        navController.navigate(Route.Search)
+                                    },
+                                    onMenuClick = {
+                                        scope.launch {
+                                            drawerState.open()
+                                        }
+                                    }
+                                )
                             }
 
                             composable<Route.Search> {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "Search"
-                                    )
-                                }
+                                SearchScreenRoot(
+                                    onBack = {
+                                        navController.navigateUp()
+                                    },
+                                    onNavigateToDetail = {}
+                                )
                             }
                         }
                     }
