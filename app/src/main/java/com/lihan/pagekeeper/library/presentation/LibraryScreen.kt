@@ -78,7 +78,9 @@ fun LibraryScreenRoot(
         onAction = { action ->
             when(action){
                 LibraryAction.ImportBookClick -> {
-                    filePick.launch("application/xml")
+                    filePick.launch(
+                        "application/epub+zip"
+                    )
                 }
                 LibraryAction.MenuClick -> onMenuClick()
                 LibraryAction.SearchClick -> onSearchClick()

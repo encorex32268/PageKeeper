@@ -13,6 +13,8 @@ splashscreen = "1.0.0"
 navigation = "2.9.5"
 koin = "4.1.1"
 coil3 = "3.3.0"
+ksp = "2.3.4"
+room = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -49,14 +51,17 @@ coil3-compose = { module = "io.coil-kt.coil3:coil-compose" , version.ref = "coil
 coil3-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil3" }
 coil3 = { module = "io.coil-kt.coil3:coil" , version.ref = "coil3"}
 
-
+#Room database
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 [bundles]
 koin = ["koin-android","koin-androidx-compose","koin-core"]

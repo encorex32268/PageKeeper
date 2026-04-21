@@ -1,6 +1,7 @@
 package com.lihan.pagekeeper
 
 import android.app.Application
+import com.lihan.pagekeeper.core.di.coreModule
 import com.lihan.pagekeeper.library.di.libraryModule
 import com.lihan.pagekeeper.search.di.searchModule
 import org.koin.android.ext.koin.androidContext
@@ -15,6 +16,7 @@ class PageKeeperApp: Application() {
             androidContext(this@PageKeeperApp)
             androidLogger(Level.DEBUG)
             modules(
+                coreModule,
                 libraryModule,
                 searchModule
             )
