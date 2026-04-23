@@ -8,6 +8,7 @@ import com.lihan.pagekeeper.core.domain.FileManager
 import com.lihan.pagekeeper.core.domain.model.Book
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlin.collections.map
 
 class PageKeeperBookRepository(
     private val bookDao: BookDao
@@ -35,5 +36,13 @@ class PageKeeperBookRepository(
 
     override suspend fun updateFavoriteStatus(id: Int, isFavorite: Boolean) {
         bookDao.updateFavoriteStatus(id, isFavorite)
+    }
+
+    override fun searchBooks(text: String): Flow<List<Book>> {
+        return bookDao.searchBooks(text).map { bookEntities ->
+            bookEntities.map { bookEntity ->
+                bookEntity.toDomain()
+            }
+        }
     }
 }

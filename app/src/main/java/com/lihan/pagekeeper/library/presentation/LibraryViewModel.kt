@@ -114,8 +114,6 @@ class LibraryViewModel(
 
     private fun upsertBook(uri: Uri) {
         viewModelScope.launch {
-            println("UpsertBook: ${uri.path}")
-            println("UpsertBook: ${uri.userInfo}")
             val epubMetadata = epubMetadataParser.parseEpubFile(uri)
             epubMetadata?.let {
                 val coverByteArray = BitmapConverter.toByteArray(epubMetadata.cover)

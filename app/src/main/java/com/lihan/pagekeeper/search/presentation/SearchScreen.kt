@@ -126,32 +126,42 @@ private fun SearchScreen(
                 color = Divider,
                 thickness = 1.dp
             )
-            if (state.items.isEmpty()){
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 40.dp),
-                    text = stringResource(R.string.no_results_found),
-                    style = MaterialTheme.typography.title_M_Medium,
-                    color = TextSecondary,
-                    textAlign = TextAlign.Center
-                )
-            }else{
-                LazyColumn(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    items(state.items){ searchBookUi ->
-                        BookSearchItem(
-                            title = searchBookUi.title,
-                            author = searchBookUi.author,
-                            imageUrl = searchBookUi.imageUrl,
-                            onItemClick = {
-                                onAction(SearchAction.OnItemClick(searchBookUi.id))
-                            }
-                        )
+            when{
+                state.items.isEmpty() && state.searchTextFieldState.text.isNotEmpty() ->{
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 40.dp),
+                        text = stringResource(R.string.no_results_found),
+                        style = MaterialTheme.typography.title_M_Medium,
+                        color = TextSecondary,
+                        textAlign = TextAlign.Center
+                    )
+                }
+                state.searchTextFieldState.text.isEmpty() ->{
+                    /* Nothing be empty*/
+                }
+                else ->{
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        items(state.items){ searchBookUi ->
+                            BookSearchItem(
+                                title = searchBookUi.title,
+                                author = searchBookUi.author,
+                                imageUrl = searchBookUi.imageUrl,
+                                onItemClick = {
+                                    onAction(SearchAction.OnItemClick(searchBookUi.id))
+                                }
+                            )
+                        }
                     }
                 }
             }
+
         }
 
     }

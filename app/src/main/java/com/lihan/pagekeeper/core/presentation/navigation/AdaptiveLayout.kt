@@ -102,11 +102,12 @@ fun AdaptiveLayout(
                         DrawerContent(
                             selected = selected,
                             onDrawerItemClick = { index,route ->
-                                selected = index
+                                println("onDrawerItemClick: $index")
                                 navController.navigate(route)
                                 scope.launch {
                                     drawerState.close()
                                 }
+                                selected = index
                             },
                             onMenuCloseClick = {
                                 scope.launch {
@@ -179,11 +180,11 @@ fun AdaptiveLayout(
                             DrawerContent(
                                 selected = selected,
                                 onDrawerItemClick = { index,route ->
-                                    selected = index
                                     navController.navigate(route)
                                     scope.launch {
                                         drawerState.close()
                                     }
+                                    selected = index
                                 },
                                 onMenuCloseClick = {
                                     scope.launch {
@@ -258,7 +259,7 @@ private fun DrawerContent(
                     },
                     selected = isSelected,
                     onClick = {
-                        onDrawerItemClick(selected,destination.route)
+                        onDrawerItemClick(index,destination.route)
                     },
                     icon = {
                         Icon(
@@ -304,7 +305,7 @@ private fun NavigationRailContent(
                 },
                 selected = isSelected,
                 onClick = {
-                    onDrawerItemClick(selected)
+                    onDrawerItemClick(index)
                 },
                 icon = {
                     Icon(

@@ -27,6 +27,7 @@ class DefaultEpubMetadataParser(
                 val zis = ZipInputStream(fis)
                 var entry = zis.nextEntry
                 while (entry != null) {
+                    println("Entry: $entry")
 
                     val isContentOpfFile = entry.name.endsWith("content.opf") || entry.name.endsWith(".opf")
 

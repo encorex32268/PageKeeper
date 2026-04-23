@@ -62,24 +62,17 @@ class MainActivity : ComponentActivity() {
                             startDestination = Route.Library,
                         ) {
                             composable<Route.Library> {
-                                if(currentDeviceConfiguration.isMobile){
-                                    LibraryScreenRoot(
-                                        onMenuClick = {
-                                            scope.launch {
-                                                drawerState.open()
-                                            }
-                                        },
-                                        onSearchClick = {
-                                            navController.navigate(Route.Search)
-                                        },
-                                        viewModel = viewModel
-                                    )
-                                }else{
-//                                    LibraryTabletScreen(
-//                                        state = LibraryTabletState(),
-//                                        onAction = {}
-//                                    )
-                                }
+                                LibraryScreenRoot(
+                                    onMenuClick = {
+                                        scope.launch {
+                                            drawerState.open()
+                                        }
+                                    },
+                                    onSearchClick = {
+                                        navController.navigate(Route.Search)
+                                    },
+                                    viewModel = viewModel
+                                )
                             }
                             composable<Route.Favorites> {
                                 FavoritesScreen(
