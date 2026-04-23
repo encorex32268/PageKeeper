@@ -1,6 +1,8 @@
 package com.lihan.pagekeeper.library.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,9 +13,14 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,6 +40,17 @@ fun LibraryTabletTopBar(
     onStartSearchClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocus by interactionSource.collectIsFocusedAsState()
+
+    LaunchedEffect(isFocus) {
+        if (isFocus && !isSearching){
+            onStartSearchClick()
+        }
+    }
+
+
     Row(
         modifier = modifier
             .systemBarsPadding()
@@ -53,6 +71,7 @@ fun LibraryTabletTopBar(
                 .weight(1f),
             textFieldState = searchTextField,
             placeholder = stringResource(R.string.search_bar_placeholder),
+            interactionSource = interactionSource,
             onDone = {
 
             },
@@ -60,7 +79,7 @@ fun LibraryTabletTopBar(
         IconButton(
             modifier = Modifier.padding(end = 4.dp),
             onClick = {
-                if (searchTextField.text.isNotEmpty()){
+                if (isSearching){
                     onCleanTextClick()
                 }else{
                     onStartSearchClick()

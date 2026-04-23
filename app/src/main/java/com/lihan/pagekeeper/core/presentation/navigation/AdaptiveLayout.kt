@@ -157,7 +157,9 @@ fun AdaptiveLayout(
                                     colors = IconButtonDefaults.iconButtonColors(
                                         containerColor = Primary
                                     ),
-                                    onClick = {}
+                                    onClick = {
+                                        filePick.launch("application/epub+zip")
+                                    }
                                 ) {
                                     Icon(
                                         imageVector = ImportBook,
@@ -170,8 +172,9 @@ fun AdaptiveLayout(
                                 Spacer(Modifier.height(60.dp))
                                 NavigationRailContent(
                                     selected = selected,
-                                    onDrawerItemClick = {
-                                        selected = it
+                                    onDrawerItemClick = { index , route ->
+                                        navController.navigate(route)
+                                        selected = index
                                     }
                                 )
                             }
@@ -183,9 +186,6 @@ fun AdaptiveLayout(
                                 selected = selected,
                                 onDrawerItemClick = { index,route ->
                                     navController.navigate(route)
-                                    scope.launch {
-                                        drawerState.close()
-                                    }
                                     selected = index
                                 },
                                 onMenuCloseClick = {
@@ -194,7 +194,7 @@ fun AdaptiveLayout(
                                     }
                                 },
                                 onImportBookClick = {
-                                    filePick.launch("application/xml")
+                                    filePick.launch("application/epub+zip")
                                 }
                             )
                         }
@@ -288,7 +288,7 @@ private fun DrawerContent(
 @Composable
 private fun NavigationRailContent(
     selected: Int,
-    onDrawerItemClick: (Int) -> Unit,
+    onDrawerItemClick: (Int, Route) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -307,7 +307,7 @@ private fun NavigationRailContent(
                 },
                 selected = isSelected,
                 onClick = {
-                    onDrawerItemClick(index)
+                    onDrawerItemClick(index,destination.route)
                 },
                 icon = {
                     Icon(

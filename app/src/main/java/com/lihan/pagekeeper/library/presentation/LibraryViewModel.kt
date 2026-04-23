@@ -1,7 +1,10 @@
+@file:OptIn(FlowPreview::class)
+
 package com.lihan.pagekeeper.library.presentation
 
 import android.net.Uri
 import androidx.compose.foundation.text.input.clearText
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lihan.pagekeeper.core.domain.BookRepository
@@ -10,16 +13,22 @@ import com.lihan.pagekeeper.core.domain.model.Book
 import com.lihan.pagekeeper.core.presentation.mapper.toUi
 import com.lihan.pagekeeper.core.presentation.util.BitmapConverter
 import com.lihan.pagekeeper.core.presentation.util.EpubMetadataParser
+import com.lihan.pagekeeper.search.presentation.mapper.toSearchBookUi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.time.delay
 
 class LibraryViewModel(
     private val bookRepository: BookRepository,
@@ -34,6 +43,7 @@ class LibraryViewModel(
         .onStart {
             if (!hasLoadedInitialData) {
                 observeBooks()
+                observeSearchField()
                 hasLoadedInitialData = true
             }
         }.stateIn(
@@ -60,6 +70,7 @@ class LibraryViewModel(
                     )
                 }
             }
+
             is LibraryAction.ItemDeleteClick -> {
                 if (state.value.isSelectMode) return
                 val wantDeleteBookUi = state.value.items.find { it.id == action.id }
@@ -70,6 +81,7 @@ class LibraryViewModel(
                     )
                 }
             }
+
             is LibraryAction.ItemFavoriteClick -> {
                 if (state.value.isSelectMode) return
             }
@@ -77,16 +89,18 @@ class LibraryViewModel(
             is LibraryAction.ItemFinishedClick -> {
                 if (state.value.isSelectMode) return
             }
+
             is LibraryAction.ItemShareClick -> {
                 if (state.value.isSelectMode) return
             }
+
             is LibraryAction.ItemSelectClick -> {
                 _state.update {
                     it.copy(
                         items = it.items.map { bookUi ->
-                            if (bookUi.id == action.id){
+                            if (bookUi.id == action.id) {
                                 bookUi.copy(isSelected = !action.isSelected)
-                            }else{
+                            } else {
                                 bookUi
                             }
                         }
@@ -105,11 +119,12 @@ class LibraryViewModel(
             }
 
             is LibraryAction.ImportBookClick -> Unit
-            LibraryAction.CleanText -> {
+            LibraryAction.ClearText -> {
                 state.value.searchTextField.clearText()
                 _state.update {
                     it.copy(
-                        isSearching = false
+                        isSearching = false,
+                        searchedItems = emptyList()
                     )
                 }
             }
@@ -143,16 +158,17 @@ class LibraryViewModel(
                     it.copy(
                         isSelectMode = true,
                         items = state.value.items.map { bookUi ->
-                            if (bookUi.id == action.id){
+                            if (bookUi.id == action.id) {
                                 bookUi.copy(isSelected = true)
-                            }else{
+                            } else {
                                 bookUi
                             }
                         }
                     )
                 }
             }
-            LibraryAction.SelectMode.DeleteClick ->{
+
+            LibraryAction.SelectMode.DeleteClick -> {
                 if (state.value.selectedBookUis.isEmpty()) return
                 _state.update {
                     it.copy(
@@ -160,24 +176,31 @@ class LibraryViewModel(
                     )
                 }
             }
+
             LibraryAction.SelectMode.BackClick -> {
-                _state.update { it.copy(
-                    items = it.items.map { bookUi ->
-                        bookUi.copy(isSelected = false)
-                    },
-                    isSelectMode = false
-                ) }
+                _state.update {
+                    it.copy(
+                        items = it.items.map { bookUi ->
+                            bookUi.copy(isSelected = false)
+                        },
+                        isSelectMode = false
+                    )
+                }
             }
+
             LibraryAction.SelectMode.FavoriteClick -> {}
             LibraryAction.SelectMode.ShareClick -> {}
+
         }
     }
 
     private fun upsertBook(uri: Uri) {
         viewModelScope.launch {
-            _state.update { it.copy(
-                isLoading = true
-            ) }
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
             val epubMetadata = epubMetadataParser.parseEpubFile(uri)
             epubMetadata?.let {
                 val coverByteArray = BitmapConverter.toByteArray(epubMetadata.cover)
@@ -195,9 +218,11 @@ class LibraryViewModel(
                 )
             }
             delay(500)
-            _state.update { it.copy(
-                isLoading = false
-            ) }
+            _state.update {
+                it.copy(
+                    isLoading = false
+                )
+            }
         }
     }
 
@@ -216,6 +241,30 @@ class LibraryViewModel(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun observeSearchField() {
+
+        snapshotFlow { state.value.searchTextField.text.toString() }
+            .distinctUntilChanged()
+            .debounce(500)
+            .onEach { searchText ->
+                if (searchText.isNotEmpty()) {
+                    val searchBookUis = bookRepository.searchBooks(
+                        text = searchText
+                    ).first().mapNotNull { book ->
+                        book.toUi()
+                    }
+
+
+                    _state.update {
+                        it.copy(
+                            searchedItems = searchBookUis
+                        )
+                    }
+                }
+
+            }.launchIn(viewModelScope)
     }
 
 }

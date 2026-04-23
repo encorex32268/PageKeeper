@@ -2,6 +2,7 @@
 
 package com.lihan.pagekeeper.library.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -16,6 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -75,6 +78,14 @@ private fun LibraryAdaptiveScreen(
 
     val isMobile = currentDeviceConfiguration.isMobile
 
+    val focusManager = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
+    BackHandler {
+        focusManager.clearFocus()
+        keyboard?.hide()
+        onAction(LibraryAction.ClearText)
+    }
+
     if (isMobile){
         LibraryMobileScreen(
             state = state,
@@ -84,8 +95,17 @@ private fun LibraryAdaptiveScreen(
     }else{
         LibraryTabletScreen(
             state = state,
-            onAction = onAction,
-            modifier = modifier
+            modifier = modifier,
+            onAction = { action ->
+                when(action){
+                    LibraryAction.ClearText -> {
+                        focusManager.clearFocus()
+                        keyboard?.hide()
+                    }
+                    else -> Unit
+                }
+                onAction(action)
+            }
         )
     }
 
