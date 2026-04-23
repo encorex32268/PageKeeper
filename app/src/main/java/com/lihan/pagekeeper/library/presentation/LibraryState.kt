@@ -10,8 +10,11 @@ data class LibraryState(
     val isSelectMode: Boolean = false,
     val isShowUnsupportedDialog: Boolean = false,
     val isShowDeleteDialog: Boolean = false,
-    val selectedBookUis: List<BookUi> = emptyList(),
     val searchTextField: TextFieldState = TextFieldState(),
     val isSearching: Boolean = false,
-    val searchedItems: List<SearchBookUi> = emptyList(),
-)
+    val searchedItems: List<BookUi> = emptyList(),
+){
+
+    val selectedBookUis: List<BookUi>
+        get() = items.filter { it.isSelected }
+}

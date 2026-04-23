@@ -18,4 +18,13 @@ sealed interface LibraryAction {
     data object StartSearch: LibraryAction
     data class UpsertBook(val uri: Uri): LibraryAction
     data object DeleteDialogConfirm: LibraryAction
+    data class ItemLongClick(val id: Int): LibraryAction
+
+    sealed interface SelectMode: LibraryAction {
+        data object DeleteClick: SelectMode
+        data object BackClick: SelectMode
+        data object ShareClick: SelectMode
+        data object FavoriteClick: SelectMode
+    }
+
 }

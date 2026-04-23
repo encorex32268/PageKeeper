@@ -2,7 +2,6 @@
 
 package com.lihan.pagekeeper.core.presentation.components
 
-import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -13,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.lihan.pagekeeper.R
 import com.lihan.pagekeeper.core.presentation.ArrowLeft
 import com.lihan.pagekeeper.core.presentation.Share
@@ -28,14 +26,18 @@ import com.lihan.pagekeeper.library.presentation.model.BookUi
 
 @Composable
 fun BookSelectBar(
-    selectedList: List<BookUi>,
+    selectedSize: Int,
+    onBack: () -> Unit,
+    onToggleFavorite: () -> Unit,
+    onShareClick: () -> Unit,
+    onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
         modifier = modifier,
         navigationIcon = {
             IconButton(
-                onClick = {}
+                onClick = onBack
             ) {
                 Icon(
                     imageVector = ArrowLeft,
@@ -46,14 +48,14 @@ fun BookSelectBar(
         },
         title = {
             Text(
-                text = stringResource(R.string.selected,selectedList.size),
+                text = stringResource(R.string.selected,selectedSize),
                 style = MaterialTheme.typography.title_M_Medium,
                 color = TextPrimary
             )
         },
         actions = {
             IconButton(
-                onClick = {}
+                onClick = onToggleFavorite
             ) {
                 Icon(
                     imageVector = Star,
@@ -62,7 +64,7 @@ fun BookSelectBar(
                 )
             }
             IconButton(
-                onClick = {}
+                onClick = onShareClick
             ) {
                 Icon(
                     imageVector = Share,
@@ -71,9 +73,7 @@ fun BookSelectBar(
                 )
             }
             IconButton(
-                onClick = {
-
-                }
+                onClick = onDeleteClick
             ) {
                 Icon(
                     imageVector = TrashCan,
@@ -92,7 +92,11 @@ fun BookSelectBar(
 private fun BookSelectBarPreview() {
     PageKeeperTheme {
         BookSelectBar(
-            selectedList = PreviewData.bookUis
+            selectedSize = PreviewData.bookUis.size,
+            onShareClick = {},
+            onDeleteClick = {},
+            onToggleFavorite = {},
+            onBack = {}
         )
     }
 }

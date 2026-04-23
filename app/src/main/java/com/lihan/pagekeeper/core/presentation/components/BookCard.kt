@@ -2,6 +2,8 @@ package com.lihan.pagekeeper.core.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -58,6 +60,7 @@ fun BookCard(
     onFinishClick: () -> Unit,
     onShareClick: () -> Unit,
     onDeleteClick: () -> Unit,
+    onLongClick: () -> Unit,
     modifier: Modifier = Modifier,
     isFavorite: Boolean = false,
     isFinished: Boolean = false,
@@ -95,6 +98,14 @@ fun BookCard(
                 shape = shape
             )
             .then(borderModifier)
+            .combinedClickable(
+                onLongClick = onLongClick,
+                onClick = {
+                    if (isSelectMode){
+                        onCheckedChange?.invoke(isSelected)
+                    }
+                }
+            )
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -104,14 +115,23 @@ fun BookCard(
                 onCheckedChange = onCheckedChange
             )
         }
-        AsyncImage(
-            model = imageRequest,
-            contentDescription = null,
-            modifier = Modifier
-                .width(104.dp)
-                .height(156.dp)
+        if (imageUrl.isNullOrEmpty()){
+            BookLoadingImage(
+                modifier = Modifier
+                    .width(104.dp)
+                    .height(156.dp)
+            )
+        }else{
+            AsyncImage(
+                model = imageRequest,
+                contentDescription = null,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .width(104.dp)
+                    .height(156.dp),
+            )
+        }
 
-        )
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -190,7 +210,8 @@ private fun BookCardPreview() {
                 onShareClick = {},
                 onDeleteClick = {},
                 onFinishClick = {},
-                onFavoriteClick = {}
+                onFavoriteClick = {},
+                onLongClick = {}
             )
             BookCard(
                 title = "Title2",
@@ -204,7 +225,8 @@ private fun BookCardPreview() {
                 onShareClick = {},
                 onDeleteClick = {},
                 onFinishClick = {},
-                onFavoriteClick = {}
+                onFavoriteClick = {},
+                onLongClick = {}
             )
         }
     }

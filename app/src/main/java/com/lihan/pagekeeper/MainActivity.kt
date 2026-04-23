@@ -24,7 +24,7 @@ import com.lihan.pagekeeper.core.presentation.util.DeviceConfiguration.Companion
 import com.lihan.pagekeeper.favorites.presentation.FavoritesScreen
 import com.lihan.pagekeeper.finished.presentation.FinishedScreen
 import com.lihan.pagekeeper.library.presentation.LibraryAction
-import com.lihan.pagekeeper.library.presentation.LibraryScreenRoot
+import com.lihan.pagekeeper.library.presentation.LibraryAdaptiveScreenRoot
 import com.lihan.pagekeeper.library.presentation.LibraryViewModel
 import com.lihan.pagekeeper.search.presentation.SearchScreenRoot
 import kotlinx.coroutines.launch
@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
                             startDestination = Route.Library,
                         ) {
                             composable<Route.Library> {
-                                LibraryScreenRoot(
+                                LibraryAdaptiveScreenRoot(
                                     onMenuClick = {
                                         scope.launch {
                                             drawerState.open()

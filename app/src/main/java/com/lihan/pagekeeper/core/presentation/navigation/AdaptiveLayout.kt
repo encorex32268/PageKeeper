@@ -102,7 +102,6 @@ fun AdaptiveLayout(
                         DrawerContent(
                             selected = selected,
                             onDrawerItemClick = { index,route ->
-                                println("onDrawerItemClick: $index")
                                 navController.navigate(route)
                                 scope.launch {
                                     drawerState.close()
@@ -116,6 +115,9 @@ fun AdaptiveLayout(
                             },
                             onImportBookClick = {
                                 filePick.launch("application/epub+zip")
+                                scope.launch {
+                                    drawerState.close()
+                                }
                             }
                         )
                     }
