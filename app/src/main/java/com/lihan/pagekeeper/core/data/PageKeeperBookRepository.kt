@@ -4,23 +4,25 @@ import com.lihan.pagekeeper.core.data.local.BookDao
 import com.lihan.pagekeeper.core.data.mapper.toDomain
 import com.lihan.pagekeeper.core.data.mapper.toEntity
 import com.lihan.pagekeeper.core.domain.BookRepository
+import com.lihan.pagekeeper.core.domain.FileManager
 import com.lihan.pagekeeper.core.domain.model.Book
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class PageKeeperBookRepository(
     private val bookDao: BookDao
-): BookRepository{
+) : BookRepository {
+
     override suspend fun upsert(book: Book) {
         bookDao.upsert(bookEntity = book.toEntity())
     }
 
     override fun getBooks(): Flow<List<Book>> {
-       return bookDao.getBookList().map { bookEntities ->
-           bookEntities.map { bookEntity ->
-               bookEntity.toDomain()
-           }
-       }
+        return bookDao.getBookList().map { bookEntities ->
+            bookEntities.map { bookEntity ->
+                bookEntity.toDomain()
+            }
+        }
     }
 
     override suspend fun deleteBook(id: Int) {
@@ -32,6 +34,6 @@ class PageKeeperBookRepository(
     }
 
     override suspend fun updateFavoriteStatus(id: Int, isFavorite: Boolean) {
-       bookDao.updateFavoriteStatus(id,isFavorite)
+        bookDao.updateFavoriteStatus(id, isFavorite)
     }
 }

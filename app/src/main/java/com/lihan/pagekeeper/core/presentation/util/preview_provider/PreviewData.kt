@@ -9,7 +9,8 @@ object PreviewData {
             id = it,
             title = "Book Title - $it",
             author = "Author - $it",
-            imageUrl = null,
+            fileUriPath = "",
+            imageFilePath = "",
             isFavorite = it % 2 == 0,
             isFinished = it % 3 == 0,
             isSelected = false

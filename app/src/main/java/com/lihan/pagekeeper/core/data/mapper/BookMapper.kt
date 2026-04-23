@@ -8,8 +8,10 @@ fun BookEntity.toDomain(): Book {
         id = id,
         title = title,
         author = author,
-        uriString = uriString,
-        isFavorite = isFavorite
+        fileUriPath = fileUriPath,
+        imageFilePath = imageFilePath,
+        isFavorite = isFavorite,
+        isReadFinished = isReadFinished
     )
 }
 
@@ -18,7 +20,9 @@ fun Book.toEntity(): BookEntity {
         id = id,
         title = title,
         author = author,
-        uriString = uriString,
-        isFavorite = isFavorite
+        fileUriPath = fileUriPath,
+        imageFilePath = imageFilePath,
+        isFavorite = isFavorite,
+        isReadFinished = isReadFinished
     )
 }

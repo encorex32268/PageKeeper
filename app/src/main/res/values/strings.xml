@@ -13,7 +13,8 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
-    <string name="delete_item">Delete \“%1$s\”?</string>
+    <string name="delete_books">Delete %1$s books?</string>
+    <string name="delete_book">Delete “%1$s”?</string>
     <string name="delete_description">This action will remove the book from your library.</string>
     <string name="search_bar_placeholder">Search books</string>
     <string name="no_results_found">No results found</string>

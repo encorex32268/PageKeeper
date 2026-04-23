@@ -56,7 +56,7 @@ fun DeleteAlertDialog(
                 .padding(24.dp)
         ) {
             Text(
-                text = stringResource(R.string.delete_item,deleteItemTitle),
+                text = deleteItemTitle,
                 style = MaterialTheme.typography.title_M_Medium,
                 color = TextPrimary
             )

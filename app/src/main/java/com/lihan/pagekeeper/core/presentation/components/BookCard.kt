@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,9 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.lihan.pagekeeper.R
 import com.lihan.pagekeeper.core.presentation.Flag
 import com.lihan.pagekeeper.core.presentation.FlagFill
@@ -71,6 +77,15 @@ fun BookCard(
     }else{
         Modifier
     }
+
+    val context = LocalContext.current
+    val imageRequest = remember(imageUrl) {
+        ImageRequest.Builder(context)
+            .data(imageUrl)
+            .crossfade(true)
+            .build()
+    }
+
     Row(
         modifier = modifier
             .height(IntrinsicSize.Min)
@@ -89,8 +104,14 @@ fun BookCard(
                 onCheckedChange = onCheckedChange
             )
         }
-        //TODO: AsyncImage from coil
-        BookLoadingImage()
+        AsyncImage(
+            model = imageRequest,
+            contentDescription = null,
+            modifier = Modifier
+                .width(104.dp)
+                .height(156.dp)
+
+        )
         Column(
             modifier = Modifier
                 .fillMaxWidth()

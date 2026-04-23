@@ -23,9 +23,12 @@ import com.lihan.pagekeeper.core.presentation.ui.theme.PageKeeperTheme
 import com.lihan.pagekeeper.core.presentation.util.DeviceConfiguration.Companion.fromWindowSizeClass
 import com.lihan.pagekeeper.favorites.presentation.FavoritesScreen
 import com.lihan.pagekeeper.finished.presentation.FinishedScreen
+import com.lihan.pagekeeper.library.presentation.LibraryAction
 import com.lihan.pagekeeper.library.presentation.LibraryScreenRoot
+import com.lihan.pagekeeper.library.presentation.LibraryViewModel
 import com.lihan.pagekeeper.search.presentation.SearchScreenRoot
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +37,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PageKeeperTheme {
                 val navController = rememberNavController()
-
+                val viewModel: LibraryViewModel = koinViewModel()
 
                 val scope = rememberCoroutineScope()
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -50,6 +53,9 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .safeDrawingPadding(),
                     drawerState = drawerState,
+                    onUpsertBook = {
+                        viewModel.onAction(LibraryAction.UpsertBook(it))
+                    },
                     content = {
                         NavHost(
                             navController = navController,
@@ -65,7 +71,8 @@ class MainActivity : ComponentActivity() {
                                         },
                                         onSearchClick = {
                                             navController.navigate(Route.Search)
-                                        }
+                                        },
+                                        viewModel = viewModel
                                     )
                                 }else{
 //                                    LibraryTabletScreen(

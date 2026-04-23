@@ -1,5 +1,7 @@
 package com.lihan.pagekeeper.library.presentation
 
+import android.net.Uri
+
 sealed interface LibraryAction {
     data object DismissUnsupportedFileDialog: LibraryAction
     data object DismissDeleteDialog: LibraryAction
@@ -14,4 +16,6 @@ sealed interface LibraryAction {
     data object ImportBookClick: LibraryAction
     data object CleanText: LibraryAction
     data object StartSearch: LibraryAction
+    data class UpsertBook(val uri: Uri): LibraryAction
+    data object DeleteDialogConfirm: LibraryAction
 }

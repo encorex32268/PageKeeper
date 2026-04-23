@@ -1,17 +1,29 @@
 package com.lihan.pagekeeper.library.presentation
 
+import android.net.Uri
 import androidx.compose.foundation.text.input.clearText
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lihan.pagekeeper.core.domain.BookRepository
+import com.lihan.pagekeeper.core.domain.FileManager
+import com.lihan.pagekeeper.core.domain.model.Book
+import com.lihan.pagekeeper.core.presentation.mapper.toUi
+import com.lihan.pagekeeper.core.presentation.util.BitmapConverter
+import com.lihan.pagekeeper.core.presentation.util.EpubMetadataParser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class LibraryViewModel: ViewModel() {
+class LibraryViewModel(
+    private val bookRepository: BookRepository,
+    private val epubMetadataParser: EpubMetadataParser,
+    private val fileManager: FileManager
+): ViewModel() {
 
     private var hasLoadedInitialData = false
 
@@ -46,7 +58,7 @@ class LibraryViewModel: ViewModel() {
                 if (wantDeleteBookUi == null) return
                 _state.update { it.copy(
                     isShowDeleteDialog = true,
-                    selectedBookUi = wantDeleteBookUi
+                    selectedBookUis =  listOf(wantDeleteBookUi)
                 ) }
             }
             is LibraryAction.ItemFavoriteClick -> {
@@ -61,6 +73,7 @@ class LibraryViewModel: ViewModel() {
                 ) }
             }
             is LibraryAction.ItemShareClick -> {}
+
             LibraryAction.MenuClick -> Unit
             LibraryAction.SearchClick -> Unit
             LibraryAction.SelectModeChanged -> {
@@ -69,7 +82,7 @@ class LibraryViewModel: ViewModel() {
                 ) }
             }
 
-            LibraryAction.ImportBookClick -> Unit
+            is LibraryAction.ImportBookClick -> Unit
             LibraryAction.CleanText -> {
                 state.value.searchTextField.clearText()
                 _state.update { it.copy(
@@ -81,12 +94,60 @@ class LibraryViewModel: ViewModel() {
                     isSearching = true
                 ) }
             }
+
+            is LibraryAction.UpsertBook -> upsertBook(action.uri)
+
+            LibraryAction.DeleteDialogConfirm -> {
+                val currentSelectedBookUis = state.value.selectedBookUis.map { it.id }
+                if (currentSelectedBookUis.isEmpty()){
+                    return
+                }
+                viewModelScope.launch {
+                    bookRepository.deleteBooksByIds(currentSelectedBookUis)
+                    _state.update { it.copy(
+                        isShowDeleteDialog = false
+                    ) }
+                }
+            }
+        }
+    }
+
+    private fun upsertBook(uri: Uri) {
+        viewModelScope.launch {
+            println("UpsertBook: ${uri.path}")
+            println("UpsertBook: ${uri.userInfo}")
+            val epubMetadata = epubMetadataParser.parseEpubFile(uri)
+            epubMetadata?.let {
+                val coverByteArray = BitmapConverter.toByteArray(epubMetadata.cover)
+                val imageFilePath = fileManager.saveBitmapToDevice(coverByteArray)
+                bookRepository.upsert(
+                    book = Book(
+                        id = null,
+                        title = epubMetadata.title ?: "",
+                        author = epubMetadata.author?:"",
+                        imageFilePath = imageFilePath,
+                        fileUriPath = uri.toString(),
+                        isFavorite = false,
+                        isReadFinished = false
+                    )
+                )
+            }
         }
     }
 
 
     private fun observeBooks(){
+        bookRepository
+            .getBooks()
+            .onEach {  books ->
+                val bookUis = books
+                    .mapNotNull { it.toUi() }
 
+                _state.update { it.copy(
+                    items =bookUis
+                ) }
+            }
+            .launchIn(viewModelScope)
     }
 
 }

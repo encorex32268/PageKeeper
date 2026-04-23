@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.lihan.pagekeeper"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -73,4 +73,5 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
+
 }

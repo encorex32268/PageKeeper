@@ -14,7 +14,7 @@ navigation = "2.9.5"
 koin = "4.1.1"
 coil3 = "3.3.0"
 ksp = "2.3.4"
-room = "2.6.1"
+room = "2.8.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

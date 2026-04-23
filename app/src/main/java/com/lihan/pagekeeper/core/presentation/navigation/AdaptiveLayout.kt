@@ -1,5 +1,6 @@
 package com.lihan.pagekeeper.core.presentation.navigation
 
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
@@ -61,6 +62,7 @@ import com.lihan.pagekeeper.core.presentation.ui.theme.Primary
 import com.lihan.pagekeeper.core.presentation.ui.theme.navigation_Large
 import com.lihan.pagekeeper.core.presentation.util.DeviceConfiguration
 import com.lihan.pagekeeper.core.presentation.util.DeviceConfiguration.Companion.fromWindowSizeClass
+import com.lihan.pagekeeper.library.presentation.LibraryAction
 import kotlinx.coroutines.launch
 
 @Composable
@@ -69,6 +71,7 @@ fun AdaptiveLayout(
     navController: NavController,
     drawerState: DrawerState,
     content: @Composable () -> Unit,
+    onUpsertBook: (Uri) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selected by remember { mutableIntStateOf(0) }
@@ -77,9 +80,9 @@ fun AdaptiveLayout(
 
     val filePick = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) {
-        if (it != null){
-            println("Get File: $it")
+    ) {uri ->
+        if (uri != null){
+            onUpsertBook(uri)
         }
     }
 
@@ -111,7 +114,7 @@ fun AdaptiveLayout(
                                 }
                             },
                             onImportBookClick = {
-                                filePick.launch("application/xml")
+                                filePick.launch("application/epub+zip")
                             }
                         )
                     }
@@ -337,7 +340,8 @@ private fun AdaptiveScaffoldTabletPreview() {
             drawerState = rememberDrawerState(initialValue = DrawerValue.Open),
             content = {
 
-            }
+            },
+            onUpsertBook = {}
         )
     }
 }
@@ -354,7 +358,8 @@ private fun AdaptiveScaffoldPreview() {
             drawerState = rememberDrawerState(initialValue = DrawerValue.Open),
             content = {
 
-            }
+            },
+            onUpsertBook = {}
         )
     }
 }

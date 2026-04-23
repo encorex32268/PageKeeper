@@ -9,6 +9,8 @@ data class BookEntity(
     val id: Int?=null,
     val title: String,
     val author: String,
-    val uriString: String,
-    val isFavorite: Boolean
+    val fileUriPath: String,
+    val imageFilePath: String,
+    val isFavorite: Boolean,
+    val isReadFinished: Boolean
 )

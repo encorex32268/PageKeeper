@@ -4,6 +4,8 @@ data class Book(
     val id: Int?,
     val title: String,
     val author: String,
-    val uriString: String,
-    val isFavorite: Boolean
+    val fileUriPath: String,
+    val imageFilePath: String,
+    val isFavorite: Boolean,
+    val isReadFinished: Boolean
 )

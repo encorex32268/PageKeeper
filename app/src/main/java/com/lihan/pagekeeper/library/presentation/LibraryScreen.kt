@@ -61,15 +61,15 @@ import org.koin.androidx.compose.koinViewModel
 fun LibraryScreenRoot(
     onSearchClick: () -> Unit,
     onMenuClick: () -> Unit,
-    viewModel: LibraryViewModel = koinViewModel()
+    viewModel: LibraryViewModel
 ){
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val filePick = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) {
-        if (it != null){
-            println("Get File: $it")
+    ) { uri ->
+        if (uri != null){
+            viewModel.onAction(LibraryAction.UpsertBook(uri))
         }
     }
 
@@ -78,9 +78,7 @@ fun LibraryScreenRoot(
         onAction = { action ->
             when(action){
                 LibraryAction.ImportBookClick -> {
-                    filePick.launch(
-                        "application/epub+zip"
-                    )
+                    filePick.launch("application/epub+zip")
                 }
                 LibraryAction.MenuClick -> onMenuClick()
                 LibraryAction.SearchClick -> onSearchClick()
@@ -201,14 +199,18 @@ private fun LibraryAdaptiveScreen(
                 }
             )
         }
-        state.isShowDeleteDialog && state.selectedBookUi != null -> {
+        state.isShowDeleteDialog && state.selectedBookUis.isNotEmpty() -> {
             DeleteAlertDialog(
-                deleteItemTitle = state.selectedBookUi.title,
+                deleteItemTitle = if (state.selectedBookUis.size > 1){
+                    stringResource(R.string.delete_books,state.selectedBookUis.size)
+                }else{
+                    stringResource(R.string.delete_book,state.selectedBookUis.first().title)
+                },
                 onCancel = {
                     onAction(LibraryAction.DismissDeleteDialog)
                 },
                 onDelete = {
-                    onAction(LibraryAction.ItemDeleteClick(state.selectedBookUi.id))
+                    onAction(LibraryAction.DeleteDialogConfirm)
                 },
                 onDismiss = {
                     onAction(LibraryAction.DismissDeleteDialog)
@@ -255,7 +257,8 @@ private fun LibraryScreenPreview() {
                     id = it,
                     title = "String",
                     author = "String2",
-                    imageUrl = null,
+                    fileUriPath = "fileUriPath",
+                    imageFilePath = "imageFilePath",
                     isFavorite = true,
                     isFinished = false,
                     isSelected = true
@@ -266,7 +269,7 @@ private fun LibraryScreenPreview() {
             state = LibraryState(
                 items = bookUis,
                 isShowUnsupportedDialog = false,
-                selectedBookUi = bookUis.random(),
+                selectedBookUis = bookUis,
                 isShowDeleteDialog = false,
                 isSearching = false
             ),
@@ -286,7 +289,8 @@ private fun LibraryScreenTabletPreview() {
                     id = it,
                     title = "String",
                     author = "String2",
-                    imageUrl = null,
+                    fileUriPath = "fileUriPath",
+                    imageFilePath = "imageFilePath",
                     isFavorite = true,
                     isFinished = false,
                     isSelected = true
@@ -297,7 +301,7 @@ private fun LibraryScreenTabletPreview() {
             state = LibraryState(
                 items = bookUis,
                 isShowUnsupportedDialog = false,
-                selectedBookUi = bookUis.random(),
+                selectedBookUis = bookUis,
                 isShowDeleteDialog = false,
                 isSearching = true
 
