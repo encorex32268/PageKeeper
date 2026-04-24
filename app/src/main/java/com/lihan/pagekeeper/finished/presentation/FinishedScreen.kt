@@ -10,9 +10,12 @@ import com.lihan.pagekeeper.R
 import com.lihan.pagekeeper.core.presentation.components.DataEmptyView
 import com.lihan.pagekeeper.core.presentation.components.PKNormalTopBar
 import com.lihan.pagekeeper.core.presentation.ui.theme.PageKeeperTheme
+import com.lihan.pagekeeper.library.presentation.LibraryState
+import com.lihan.pagekeeper.library.presentation.components.LazyBookLayout
 
 @Composable
 fun FinishedScreen(
+    state: LibraryState,
     onMenuClick: () -> Unit,
     onSearchClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -25,11 +28,24 @@ fun FinishedScreen(
             onMenuClick = onMenuClick,
             onSearchClick = onSearchClick
         )
-        DataEmptyView(
-            painter = painterResource(R.drawable.finished_empty),
-            title = stringResource(R.string.your_finished_is_empty),
-            description = stringResource(R.string.your_finished_is_empty_description)
-        )
+        if (state.finishedBookUis.isEmpty()){
+            DataEmptyView(
+                painter = painterResource(R.drawable.finished_empty),
+                title = stringResource(R.string.your_finished_is_empty),
+                description = stringResource(R.string.your_finished_is_empty_description)
+            )
+        }else{
+            LazyBookLayout(
+                isSelectMode = state.isSelectMode,
+                items = state.finishedBookUis,
+                onDeleteClick = {},
+                onShareClick = {},
+                onLongClick = {},
+                onFinishClick = { id, isFinish -> },
+                onCheckedChange = { id , isSelect -> },
+                onFavoriteClick = { id, isFavorite -> },
+            )
+        }
     }
 
 }
@@ -41,7 +57,8 @@ private fun FinishedScreenPreview() {
     PageKeeperTheme {
         FinishedScreen(
             onSearchClick = {},
-            onMenuClick = {}
+            onMenuClick = {},
+            state = LibraryState()
         )
     }
 }

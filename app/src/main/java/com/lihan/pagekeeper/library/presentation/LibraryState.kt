@@ -17,4 +17,10 @@ data class LibraryState(
 
     val selectedBookUis: List<BookUi>
         get() = items.filter { it.isSelected }
+
+    val favoriteBookUis: List<BookUi>
+        get() = items.filter { it.isFavorite }
+
+    val finishedBookUis: List<BookUi>
+        get() = items.filter { it.isFinished }
 }

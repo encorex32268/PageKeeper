@@ -23,6 +23,9 @@ interface BookDao {
     @Query("UPDATE BookEntity SET isFavorite = :isFavorite WHERE id = :id")
     suspend fun updateFavoriteStatus(id: Int, isFavorite: Boolean)
 
+    @Query("UPDATE BookEntity SET isReadFinished = :isFinished WHERE id = :id")
+    suspend fun updateFinishedStatus(id: Int, isFinished: Boolean)
+
     @Query("""
         SELECT * FROM BookEntity
         WHERE title LIKE '%' || :text || '%' 

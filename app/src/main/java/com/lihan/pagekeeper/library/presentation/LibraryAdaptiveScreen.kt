@@ -6,31 +6,57 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lihan.pagekeeper.R
+import com.lihan.pagekeeper.core.presentation.components.BookSearchItem
+import com.lihan.pagekeeper.core.presentation.components.BookSelectBar
 import com.lihan.pagekeeper.core.presentation.components.ConfirmAlertDialog
+import com.lihan.pagekeeper.core.presentation.components.DataEmptyView
 import com.lihan.pagekeeper.core.presentation.components.DeleteAlertDialog
+import com.lihan.pagekeeper.core.presentation.components.PKNormalTopBar
+import com.lihan.pagekeeper.core.presentation.ui.theme.BGMain
 import com.lihan.pagekeeper.core.presentation.ui.theme.Black40
+import com.lihan.pagekeeper.core.presentation.ui.theme.Divider
 import com.lihan.pagekeeper.core.presentation.ui.theme.LoaderMain
 import com.lihan.pagekeeper.core.presentation.ui.theme.LoaderSecondary
 import com.lihan.pagekeeper.core.presentation.ui.theme.PageKeeperTheme
+import com.lihan.pagekeeper.core.presentation.ui.theme.TabletBlockBG
+import com.lihan.pagekeeper.core.presentation.ui.theme.TextSecondary
+import com.lihan.pagekeeper.core.presentation.ui.theme.title_M_Medium
 import com.lihan.pagekeeper.core.presentation.util.DeviceConfiguration
+import com.lihan.pagekeeper.library.presentation.components.LazyBookLayout
+import com.lihan.pagekeeper.library.presentation.components.LibraryTabletTopBar
 import com.lihan.pagekeeper.library.presentation.model.BookUi
 
 @Composable
@@ -80,34 +106,164 @@ private fun LibraryAdaptiveScreen(
 
     val focusManager = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
+
     BackHandler {
         focusManager.clearFocus()
         keyboard?.hide()
         onAction(LibraryAction.ClearText)
     }
 
-    if (isMobile){
-        LibraryMobileScreen(
-            state = state,
-            onAction = onAction,
-            modifier = modifier
-        )
-    }else{
-        LibraryTabletScreen(
-            state = state,
-            modifier = modifier,
-            onAction = { action ->
-                when(action){
-                    LibraryAction.ClearText -> {
-                        focusManager.clearFocus()
-                        keyboard?.hide()
-                    }
-                    else -> Unit
+
+    Column(
+        modifier = modifier
+            .then(
+                if (isMobile) Modifier else
+                    Modifier.clip(RoundedCornerShape(28.dp))
+            )
+            .fillMaxSize()
+            .background(
+                if (isMobile){
+                    BGMain
+                }else{
+                    TabletBlockBG
                 }
-                onAction(action)
+            )
+    ) {
+        if (state.isSelectMode){
+            BookSelectBar(
+                selectedSize = state.selectedBookUis.size,
+                onBack = {
+                    onAction(LibraryAction.SelectMode.BackClick)
+                },
+                onDeleteClick = {
+                    onAction(LibraryAction.SelectMode.DeleteClick)
+                },
+                onShareClick = {
+                    onAction(LibraryAction.SelectMode.ShareClick)
+                },
+                onToggleFavorite = {
+                    onAction(LibraryAction.SelectMode.FavoriteClick)
+                }
+            )
+        }else{
+            if (isMobile){
+                PKNormalTopBar(
+                    title = stringResource(R.string.library),
+                    onMenuClick = {
+                        onAction(LibraryAction.MenuClick)
+                    },
+                    onSearchClick = {
+                        onAction(LibraryAction.SearchClick)
+                    }
+                )
+            }else{
+                LibraryTabletTopBar(
+                    modifier = Modifier
+                        .then(
+                            if (state.isSearching){
+                                Modifier.fillMaxWidth()
+                            }else{
+                                Modifier
+                            }
+                        )
+                        .padding(12.dp),
+                    searchTextField = state.searchTextField,
+                    isSearching = state.isSearching,
+                    onCleanTextClick = {
+                        onAction(LibraryAction.ClearText)
+                    },
+                    onStartSearchClick = {
+                        onAction(LibraryAction.StartSearch)
+                    }
+                )
             }
-        )
+        }
+        if (!state.isSearching){
+            if (state.items.isEmpty()){
+                DataEmptyView(
+                    isLoading = state.isLoading,
+                    modifier = if (isMobile) Modifier.fillMaxSize() else Modifier,
+                    logoBackgroundColor = if (isMobile) Color.Transparent else BGMain,
+                    painter = painterResource(R.drawable.logo),
+                    onImportBookClick = {
+                        onAction(LibraryAction.ImportBookClick)
+                    },
+                    title = stringResource(R.string.your_library_is_empty),
+                    description = stringResource(R.string.your_library_is_empty_description)
+                )
+            }else{
+                LazyBookLayout(
+                    isSelectMode = state.isSelectMode,
+                    items =  state.items,
+                    onFinishClick = { id,isFinish ->
+                        onAction(LibraryAction.ItemFinishedClick(id,isFinish))
+                    },
+                    onFavoriteClick = { id, isFavorite ->
+                        onAction(LibraryAction.ItemFavoriteClick(id,isFavorite))
+                    },
+                    onCheckedChange = { id, isSelect ->
+                        onAction(LibraryAction.ItemSelectClick(id,isSelect))
+                    },
+                    onDeleteClick = {
+                        onAction(LibraryAction.ItemDeleteClick(it))
+                    },
+                    onLongClick = {
+                        onAction(LibraryAction.ItemDeleteClick(it))
+                    },
+                    onShareClick = {
+                        onAction(LibraryAction.ItemDeleteClick(it))
+                    }
+                )
+
+            }
+        }else{
+            Column {
+                HorizontalDivider(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    thickness = 1.dp,
+                    color = Divider
+                )
+                when{
+                    state.searchedItems.isEmpty() && state.searchTextField.text.isEmpty() -> Unit
+                    state.searchedItems.isEmpty() && state.searchTextField.text.isNotEmpty() -> {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 40.dp),
+                            text = stringResource(R.string.no_results_found),
+                            style = MaterialTheme.typography.title_M_Medium,
+                            color = TextSecondary,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    else ->{
+                        LazyVerticalGrid(
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .padding(horizontal = 16.dp),
+                            columns = GridCells.Fixed(2),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(state.searchedItems){ bookUi ->
+                                BookSearchItem(
+                                    title = bookUi.title,
+                                    author = bookUi.author,
+                                    imageUrl = bookUi.imageFilePath,
+                                    onItemClick = {
+
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
+
 
     when{
        state.isShowUnsupportedDialog ->{

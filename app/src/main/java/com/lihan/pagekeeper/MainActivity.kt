@@ -12,8 +12,10 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -38,7 +40,7 @@ class MainActivity : ComponentActivity() {
             PageKeeperTheme {
                 val navController = rememberNavController()
                 val viewModel: LibraryViewModel = koinViewModel()
-
+                val libraryState by viewModel.state.collectAsStateWithLifecycle()
                 val scope = rememberCoroutineScope()
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
@@ -76,6 +78,7 @@ class MainActivity : ComponentActivity() {
                             }
                             composable<Route.Favorites> {
                                 FavoritesScreen(
+                                    state = libraryState,
                                     onSearchClick = {
                                         navController.navigate(Route.Search)
                                     },
@@ -89,6 +92,7 @@ class MainActivity : ComponentActivity() {
 
                             composable<Route.Finished> {
                                 FinishedScreen(
+                                    state = libraryState,
                                     onSearchClick = {
                                         navController.navigate(Route.Search)
                                     },

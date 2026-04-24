@@ -11,9 +11,12 @@ import com.lihan.pagekeeper.core.presentation.components.DataEmptyView
 import com.lihan.pagekeeper.core.presentation.components.PKNormalTopBar
 import com.lihan.pagekeeper.core.presentation.ui.theme.PageKeeperTheme
 import com.lihan.pagekeeper.library.presentation.LibraryAction
+import com.lihan.pagekeeper.library.presentation.LibraryState
+import com.lihan.pagekeeper.library.presentation.components.LazyBookLayout
 
 @Composable
 fun FavoritesScreen(
+    state: LibraryState,
     onMenuClick: () -> Unit,
     onSearchClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -26,11 +29,24 @@ fun FavoritesScreen(
             onMenuClick = onMenuClick,
             onSearchClick = onSearchClick
         )
-        DataEmptyView(
-            painter = painterResource(R.drawable.favorites_empty),
-            title = stringResource(R.string.your_favorites_is_empty),
-            description = stringResource(R.string.your_favorites_is_empty_description)
-        )
+        if (state.favoriteBookUis.isEmpty()){
+            DataEmptyView(
+                painter = painterResource(R.drawable.favorites_empty),
+                title = stringResource(R.string.your_favorites_is_empty),
+                description = stringResource(R.string.your_favorites_is_empty_description)
+            )
+        }else{
+            LazyBookLayout(
+                isSelectMode = state.isSelectMode,
+                items = state.favoriteBookUis,
+                onDeleteClick = {},
+                onShareClick = {},
+                onLongClick = {},
+                onFinishClick = { id, isFinish -> },
+                onCheckedChange = { id , isSelect -> },
+                onFavoriteClick = { id, isFavorite -> },
+            )
+        }
     }
 
 }
@@ -41,6 +57,7 @@ fun FavoritesScreen(
 private fun FavoritesScreenPreview() {
     PageKeeperTheme {
         FavoritesScreen(
+            state = LibraryState(),
             onSearchClick = {},
             onMenuClick = {}
         )

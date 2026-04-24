@@ -38,6 +38,10 @@ class PageKeeperBookRepository(
         bookDao.updateFavoriteStatus(id, isFavorite)
     }
 
+    override suspend fun updateFinishedStatus(id: Int, isFinished: Boolean) {
+        bookDao.updateFinishedStatus(id, isFinished)
+    }
+
     override fun searchBooks(text: String): Flow<List<Book>> {
         return bookDao.searchBooks(text).map { bookEntities ->
             bookEntities.map { bookEntity ->

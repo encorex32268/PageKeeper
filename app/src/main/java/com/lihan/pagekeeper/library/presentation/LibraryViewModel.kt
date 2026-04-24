@@ -84,10 +84,18 @@ class LibraryViewModel(
 
             is LibraryAction.ItemFavoriteClick -> {
                 if (state.value.isSelectMode) return
+                viewModelScope.launch {
+                    println("ItemFavoriteClick: ${action.id} / ${action.isFavorite}")
+                    println("ItemFavoriteClick: ${action.id} / ${!action.isFavorite}")
+                    bookRepository.updateFavoriteStatus(action.id,!action.isFavorite)
+                }
             }
 
             is LibraryAction.ItemFinishedClick -> {
                 if (state.value.isSelectMode) return
+                viewModelScope.launch {
+                    bookRepository.updateFinishedStatus(action.id,!action.isFinished)
+                }
             }
 
             is LibraryAction.ItemShareClick -> {

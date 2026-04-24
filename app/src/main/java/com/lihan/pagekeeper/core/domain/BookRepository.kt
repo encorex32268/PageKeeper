@@ -15,6 +15,8 @@ interface BookRepository {
 
     suspend fun updateFavoriteStatus(id: Int, isFavorite: Boolean)
 
+    suspend fun updateFinishedStatus(id: Int, isFinished: Boolean)
+
     fun searchBooks(text: String): Flow<List<Book>>
 
 }
