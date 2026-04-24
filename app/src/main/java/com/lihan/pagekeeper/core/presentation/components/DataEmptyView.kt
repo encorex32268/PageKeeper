@@ -99,10 +99,6 @@ fun DataEmptyView(
             }
 
         }
-        if (isLoading){
-            PKCircularProgressIndicator()
-        }
-
     }
 
 

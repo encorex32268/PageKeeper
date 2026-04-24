@@ -12,7 +12,7 @@ import com.lihan.pagekeeper.core.domain.FileManager
 import com.lihan.pagekeeper.core.domain.model.Book
 import com.lihan.pagekeeper.core.presentation.mapper.toUi
 import com.lihan.pagekeeper.core.presentation.util.BitmapConverter
-import com.lihan.pagekeeper.core.presentation.util.EpubMetadataParser
+import com.lihan.pagekeeper.core.presentation.util.FB2FileParser
 import com.lihan.pagekeeper.search.presentation.mapper.toSearchBookUi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 
 class LibraryViewModel(
     private val bookRepository: BookRepository,
-    private val epubMetadataParser: EpubMetadataParser,
+    private val fb2FileParser: FB2FileParser,
     private val fileManager: FileManager
 ) : ViewModel() {
 
@@ -72,12 +72,16 @@ class LibraryViewModel(
             }
 
             is LibraryAction.ItemDeleteClick -> {
+                println("state.value.isSelectMode: ${state.value.isSelectMode}")
                 if (state.value.isSelectMode) return
                 val wantDeleteBookUi = state.value.items.find { it.id == action.id }
+                println("wantDeleteBookUi: ${wantDeleteBookUi?.title}")
                 if (wantDeleteBookUi == null) return
+
                 _state.update {
                     it.copy(
-                        isShowDeleteDialog = true
+                        isShowDeleteDialog = true,
+                        selectedBookUis = listOf(wantDeleteBookUi)
                     )
                 }
             }
@@ -203,28 +207,58 @@ class LibraryViewModel(
     }
 
     private fun upsertBook(uri: Uri) {
+
+
         viewModelScope.launch {
             _state.update {
                 it.copy(
                     isLoading = true
                 )
             }
-            val epubMetadata = epubMetadataParser.parseEpubFile(uri)
-            epubMetadata?.let {
-                val coverByteArray = BitmapConverter.toByteArray(epubMetadata.cover)
-                val imageFilePath = fileManager.saveBitmapToDevice(coverByteArray)
-                bookRepository.upsert(
-                    book = Book(
-                        id = null,
-                        title = epubMetadata.title ?: "",
-                        author = epubMetadata.author ?: "",
-                        imageFilePath = imageFilePath,
-                        fileUriPath = uri.toString(),
-                        isFavorite = false,
-                        isReadFinished = false
-                    )
-                )
+
+            val fB2Metadata = fb2FileParser.parse(uri)
+            println("fB2Metadata: ${fB2Metadata}")
+            if (fB2Metadata == null){
+                _state.update { it.copy(
+                    isShowUnsupportedDialog = true,
+                    isLoading = false
+                ) }
+                return@launch
             }
+            val coverByteArray = BitmapConverter.toByteArray(fB2Metadata.cover)
+            val imageFilePath = fileManager.saveBitmapToDevice(coverByteArray)
+
+
+            bookRepository.upsert(
+                book = Book(
+                    id = null,
+                    title = fB2Metadata?.title ?: "",
+                    author = fB2Metadata?.author ?: "",
+                    imageFilePath =imageFilePath,
+                    fileUriPath = uri.toString(),
+                    isFavorite = false,
+                    isReadFinished = false
+                )
+            )
+
+
+
+//            val epubMetadata = epubMetadataParser.parseEpubFile(uri)
+//            epubMetadata?.let {
+//                val coverByteArray = BitmapConverter.toByteArray(epubMetadata.cover)
+//                val imageFilePath = fileManager.saveBitmapToDevice(coverByteArray)
+//                bookRepository.upsert(
+//                    book = Book(
+//                        id = null,
+//                        title = epubMetadata.title ?: "",
+//                        author = epubMetadata.author ?: "",
+//                        imageFilePath = imageFilePath,
+//                        fileUriPath = uri.toString(),
+//                        isFavorite = false,
+//                        isReadFinished = false
+//                    )
+//                )
+//            }
             delay(500)
             _state.update {
                 it.copy(

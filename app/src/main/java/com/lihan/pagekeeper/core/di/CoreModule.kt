@@ -7,8 +7,8 @@ import com.lihan.pagekeeper.core.data.local.BookDao
 import com.lihan.pagekeeper.core.data.local.PageKeeperDatabase
 import com.lihan.pagekeeper.core.domain.BookRepository
 import com.lihan.pagekeeper.core.domain.FileManager
-import com.lihan.pagekeeper.core.presentation.util.DefaultEpubMetadataParser
-import com.lihan.pagekeeper.core.presentation.util.EpubMetadataParser
+import com.lihan.pagekeeper.core.presentation.util.DefaultFB2Parser
+import com.lihan.pagekeeper.core.presentation.util.FB2FileParser
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -30,6 +30,6 @@ val coreModule = module {
 
     singleOf(::PageKeeperBookRepository).bind<BookRepository>()
     singleOf(::DefaultFileManager).bind<FileManager>()
-    singleOf(::DefaultEpubMetadataParser).bind<EpubMetadataParser>()
+    singleOf(::DefaultFB2Parser).bind<FB2FileParser>()
 
 }

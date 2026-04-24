@@ -114,7 +114,7 @@ fun AdaptiveLayout(
                                 }
                             },
                             onImportBookClick = {
-                                filePick.launch("application/epub+zip")
+                                filePick.launch("*/*")
                                 scope.launch {
                                     drawerState.close()
                                 }

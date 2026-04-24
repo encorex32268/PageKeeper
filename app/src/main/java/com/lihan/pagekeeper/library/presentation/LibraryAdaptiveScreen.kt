@@ -45,6 +45,7 @@ import com.lihan.pagekeeper.core.presentation.components.ConfirmAlertDialog
 import com.lihan.pagekeeper.core.presentation.components.DataEmptyView
 import com.lihan.pagekeeper.core.presentation.components.DeleteAlertDialog
 import com.lihan.pagekeeper.core.presentation.components.PKNormalTopBar
+import com.lihan.pagekeeper.core.presentation.design_system.PKCircularProgressIndicator
 import com.lihan.pagekeeper.core.presentation.ui.theme.BGMain
 import com.lihan.pagekeeper.core.presentation.ui.theme.Black40
 import com.lihan.pagekeeper.core.presentation.ui.theme.Divider
@@ -80,7 +81,7 @@ fun LibraryAdaptiveScreenRoot(
         onAction = { action ->
             when(action){
                 LibraryAction.ImportBookClick -> {
-                    filePick.launch("application/epub+zip")
+                    filePick.launch("*/*")
                 }
                 LibraryAction.MenuClick -> onMenuClick()
                 LibraryAction.SearchClick -> onSearchClick()
@@ -205,6 +206,7 @@ private fun LibraryAdaptiveScreen(
                         onAction(LibraryAction.ItemSelectClick(id,isSelect))
                     },
                     onDeleteClick = {
+                        println("Delete ${it}")
                         onAction(LibraryAction.ItemDeleteClick(it))
                     },
                     onLongClick = {
@@ -294,18 +296,11 @@ private fun LibraryAdaptiveScreen(
                 }
             )
         }
-
     }
     if (state.isLoading){
-        CircularProgressIndicator(
-            modifier = Modifier.fillMaxSize()
-                .background(Black40)
-                .wrapContentSize()
-                .size(48.dp),
-            color = LoaderMain,
-            trackColor = LoaderSecondary
-        )
+        PKCircularProgressIndicator()
     }
+
 
 }
 

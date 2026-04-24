@@ -31,7 +31,7 @@ fun PKCircularProgressIndicator(
                 .wrapContentSize()
                 .size(48.dp),
             color = LoaderMain,
-            trackColor = LoaderSecondary
+            trackColor = LoaderSecondary,
         )
     }
 
