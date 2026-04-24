@@ -74,4 +74,7 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
+    implementation("androidx.core:core-splashscreen:1.2.0")
+
+
 }

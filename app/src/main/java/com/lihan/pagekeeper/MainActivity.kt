@@ -15,6 +15,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -39,8 +40,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             PageKeeperTheme {
                 val navController = rememberNavController()
+
                 val viewModel: LibraryViewModel = koinViewModel()
                 val libraryState by viewModel.state.collectAsStateWithLifecycle()
+
                 val scope = rememberCoroutineScope()
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
