@@ -41,7 +41,7 @@ fun PageKeeperTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = LightColorScheme,
         typography = Typography,
         content = content
     )

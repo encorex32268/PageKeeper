@@ -24,9 +24,13 @@ class DefaultFB2Parser(
 
     override suspend fun parse(uri: Uri): FB2Metadata? {
         val mimeType = context.contentResolver.getType(uri)
-        val extension = uri.path?.substringAfterLast('.', "")
+        val path = uri.path?.lowercase() ?: ""
+        
+        val isFB2File = path.contains(".fb2") || 
+                        mimeType == "application/x-fictionbook+xml" ||
+                        ((mimeType == "application/xml" || mimeType == "text/xml") && path.endsWith(".xml") && path.contains(".fb2"))
 
-        if (mimeType != "application/x-fictionbook+xml" && extension?.lowercase() != MIME_TYPE) {
+        if (!isFB2File) {
             return null
         }
 

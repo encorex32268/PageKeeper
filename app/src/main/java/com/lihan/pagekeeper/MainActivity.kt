@@ -4,8 +4,10 @@ package com.lihan.pagekeeper
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.DrawerValue
@@ -15,6 +17,8 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -22,7 +26,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lihan.pagekeeper.core.domain.Route
 import com.lihan.pagekeeper.core.presentation.navigation.AdaptiveLayout
+import com.lihan.pagekeeper.core.presentation.ui.theme.BGMain
 import com.lihan.pagekeeper.core.presentation.ui.theme.PageKeeperTheme
+import com.lihan.pagekeeper.core.presentation.ui.theme.Primary
 import com.lihan.pagekeeper.core.presentation.util.DeviceConfiguration.Companion.fromWindowSizeClass
 import com.lihan.pagekeeper.favorites.presentation.FavoritesScreen
 import com.lihan.pagekeeper.finished.presentation.FinishedScreen
@@ -35,8 +41,14 @@ import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(
+                scrim = BGMain.toArgb(),
+                darkScrim = Color.Transparent.toArgb()
+            )
+        )
         setContent {
             PageKeeperTheme {
                 val navController = rememberNavController()
@@ -55,6 +67,7 @@ class MainActivity : ComponentActivity() {
                     currentDeviceConfiguration = currentDeviceConfiguration,
                     navController = navController,
                     modifier = Modifier
+                        .background(BGMain)
                         .fillMaxSize()
                         .safeDrawingPadding(),
                     drawerState = drawerState,

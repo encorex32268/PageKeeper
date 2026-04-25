@@ -72,10 +72,8 @@ class LibraryViewModel(
             }
 
             is LibraryAction.ItemDeleteClick -> {
-                println("state.value.isSelectMode: ${state.value.isSelectMode}")
                 if (state.value.isSelectMode) return
                 val wantDeleteBookUi = state.value.items.find { it.id == action.id }
-                println("wantDeleteBookUi: ${wantDeleteBookUi?.title}")
                 if (wantDeleteBookUi == null) return
 
                 _state.update {
@@ -89,8 +87,6 @@ class LibraryViewModel(
             is LibraryAction.ItemFavoriteClick -> {
                 if (state.value.isSelectMode) return
                 viewModelScope.launch {
-                    println("ItemFavoriteClick: ${action.id} / ${action.isFavorite}")
-                    println("ItemFavoriteClick: ${action.id} / ${!action.isFavorite}")
                     bookRepository.updateFavoriteStatus(action.id,!action.isFavorite)
                 }
             }
@@ -217,7 +213,7 @@ class LibraryViewModel(
             }
 
             val fB2Metadata = fb2FileParser.parse(uri)
-            println("fB2Metadata: ${fB2Metadata}")
+
             if (fB2Metadata == null){
                 _state.update { it.copy(
                     isShowUnsupportedDialog = true,
