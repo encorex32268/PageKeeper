@@ -28,6 +28,7 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -201,7 +202,9 @@ private fun LibraryAdaptiveScreen(
             if (state.items.isEmpty()){
                 DataEmptyView(
                     isLoading = state.isLoading,
-                    modifier = if (isMobile) Modifier.fillMaxSize() else Modifier,
+                    modifier = if (isMobile) Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 64.dp) else Modifier.padding(bottom = 64.dp),
                     logoBackgroundColor = if (isMobile) Color.Transparent else BGMain,
                     painter = painterResource(R.drawable.logo),
                     onImportBookClick = {
@@ -295,12 +298,12 @@ private fun LibraryAdaptiveScreen(
                 }
             )
         }
-        state.isShowDeleteDialog && state.selectedBookUis.isNotEmpty() -> {
+        state.isShowDeleteDialog && (state.selectedBookUis.isNotEmpty() || state.selectedBook != null ) -> {
             DeleteAlertDialog(
-                deleteItemTitle = if (state.selectedBookUis.size > 1){
+                deleteItemTitle = if (state.selectedBook == null){
                     stringResource(R.string.delete_books,state.selectedBookUis.size)
                 }else{
-                    stringResource(R.string.delete_book,state.selectedBookUis.first().title)
+                    stringResource(R.string.delete_book,state.selectedBook.title)
                 },
                 onCancel = {
                     onAction(LibraryAction.DismissDeleteDialog)
@@ -343,11 +346,11 @@ private fun LibraryScreenPreview() {
         }
         LibraryAdaptiveScreen(
             state = LibraryState(
-                items = bookUis,
+                items = emptyList(),
                 isShowUnsupportedDialog = false,
                 isShowDeleteDialog = false,
                 isSearching = false,
-                isLoading = true
+                isLoading = false
             ),
             onAction = {}
         )

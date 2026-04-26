@@ -8,7 +8,9 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import com.lihan.pagekeeper.core.domain.FileManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
+import okio.IOException
 import java.io.File
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -39,10 +41,20 @@ class DefaultFileManager(
         }
     }
 
-    override suspend fun removeBitmap(path: String) {
-        val file = File(path)
-        if (file.exists()){
-            file.delete()
+    override suspend fun removeBitmap(paths: List<String>) = withContext(Dispatchers.IO) {
+
+        paths.forEach { path ->
+            try {
+                val file = File(path)
+                if (file.exists()){
+                    println("Path exists : $path")
+                    file.delete()
+                }
+            }catch (e: IOException){
+                ensureActive()
+                e.printStackTrace()
+            }
         }
+
     }
 }

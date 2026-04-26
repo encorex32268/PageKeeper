@@ -13,6 +13,7 @@ import com.lihan.pagekeeper.core.domain.model.Book
 import com.lihan.pagekeeper.core.presentation.mapper.toUi
 import com.lihan.pagekeeper.core.presentation.util.BitmapConverter
 import com.lihan.pagekeeper.core.presentation.util.FB2FileParser
+import com.lihan.pagekeeper.library.presentation.model.BookUi
 import com.lihan.pagekeeper.search.presentation.mapper.toSearchBookUi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
@@ -58,7 +59,8 @@ class LibraryViewModel(
             LibraryAction.DismissDeleteDialog -> {
                 _state.update {
                     it.copy(
-                        isShowDeleteDialog = false
+                        isShowDeleteDialog = false,
+                        selectedBook = null
                     )
                 }
             }
@@ -79,7 +81,7 @@ class LibraryViewModel(
                 _state.update {
                     it.copy(
                         isShowDeleteDialog = true,
-                        selectedBookUis = listOf(wantDeleteBookUi)
+                        selectedBook = wantDeleteBookUi
                     )
                 }
             }
@@ -144,15 +146,26 @@ class LibraryViewModel(
 
             is LibraryAction.UpsertBook -> upsertBook(action.uri)
             LibraryAction.DeleteDialogConfirm -> {
-                val currentSelectedBookUis = state.value.selectedBookUis.map { it.id }
-                if (currentSelectedBookUis.isEmpty()) {
-                    return
-                }
+                val currentState = state.value
+                val selectedBookUis= ArrayList<BookUi>()
                 viewModelScope.launch {
-                    bookRepository.deleteBooksByIds(currentSelectedBookUis)
+                    if (currentState.selectedBook != null){
+                        bookRepository.deleteBook(currentState.selectedBook.id)
+                        selectedBookUis.add(currentState.selectedBook)
+                    }else{
+                        val selectedIds = currentState.selectedBookUis.map { it.id }
+                        if (selectedIds.isEmpty()) return@launch
+                        bookRepository.deleteBooksByIds(selectedIds)
+                        selectedBookUis.addAll(currentState.selectedBookUis)
+                    }
+                    val bookImagePaths = selectedBookUis.map { it.imageFilePath }
+                    fileManager.removeBitmap(bookImagePaths)
+
                     _state.update {
                         it.copy(
-                            isShowDeleteDialog = false
+                            isShowDeleteDialog = false,
+                            selectedBook = null,
+                            isSelectMode = false
                         )
                     }
                 }

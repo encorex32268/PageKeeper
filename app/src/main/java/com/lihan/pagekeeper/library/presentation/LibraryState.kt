@@ -13,10 +13,11 @@ data class LibraryState(
     val searchTextField: TextFieldState = TextFieldState(),
     val isSearching: Boolean = false,
     val searchedItems: List<BookUi> = emptyList(),
-    val selectedBookUis: List<BookUi> = items.filter { it.isSelected },
+    val selectedBook: BookUi?=null,
 ){
 
-
+    val selectedBookUis: List<BookUi>
+        get() = items.filter { it.isSelected }
 
     val favoriteBookUis: List<BookUi>
         get() = items.filter { it.isFavorite }
