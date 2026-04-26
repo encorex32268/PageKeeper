@@ -158,7 +158,7 @@ fun AdaptiveLayout(
                                         containerColor = Primary
                                     ),
                                     onClick = {
-                                        filePick.launch("application/epub+zip")
+                                        filePick.launch("*/*")
                                     }
                                 ) {
                                     Icon(

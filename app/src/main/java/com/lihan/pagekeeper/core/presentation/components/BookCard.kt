@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -129,6 +130,7 @@ fun BookCard(
                     .clip(RoundedCornerShape(4.dp))
                     .width(104.dp)
                     .height(156.dp),
+                contentScale = ContentScale.FillBounds
             )
         }
 
