@@ -98,10 +98,7 @@ class LibraryViewModel(
                 }
             }
 
-            is LibraryAction.ItemShareClick -> {
-                if (state.value.isSelectMode) return
-            }
-
+            is LibraryAction.ItemShareClick -> Unit
             is LibraryAction.ItemSelectClick -> {
                 _state.update {
                     it.copy(
@@ -228,8 +225,8 @@ class LibraryViewModel(
             bookRepository.upsert(
                 book = Book(
                     id = null,
-                    title = fB2Metadata?.title ?: "",
-                    author = fB2Metadata?.author ?: "",
+                    title = fB2Metadata.title ?: "",
+                    author = fB2Metadata.author ?: "",
                     imageFilePath =imageFilePath,
                     fileUriPath = uri.toString(),
                     isFavorite = false,
@@ -237,24 +234,6 @@ class LibraryViewModel(
                 )
             )
 
-
-
-//            val epubMetadata = epubMetadataParser.parseEpubFile(uri)
-//            epubMetadata?.let {
-//                val coverByteArray = BitmapConverter.toByteArray(epubMetadata.cover)
-//                val imageFilePath = fileManager.saveBitmapToDevice(coverByteArray)
-//                bookRepository.upsert(
-//                    book = Book(
-//                        id = null,
-//                        title = epubMetadata.title ?: "",
-//                        author = epubMetadata.author ?: "",
-//                        imageFilePath = imageFilePath,
-//                        fileUriPath = uri.toString(),
-//                        isFavorite = false,
-//                        isReadFinished = false
-//                    )
-//                )
-//            }
             delay(500)
             _state.update {
                 it.copy(

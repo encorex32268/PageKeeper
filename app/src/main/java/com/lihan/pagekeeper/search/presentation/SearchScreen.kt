@@ -2,6 +2,7 @@
 
 package com.lihan.pagekeeper.search.presentation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -32,6 +34,7 @@ import com.lihan.pagekeeper.core.presentation.ArrowLeft
 import com.lihan.pagekeeper.core.presentation.Close
 import com.lihan.pagekeeper.core.presentation.components.BookSearchBar
 import com.lihan.pagekeeper.core.presentation.components.BookSearchItem
+import com.lihan.pagekeeper.core.presentation.ui.theme.BGMain
 import com.lihan.pagekeeper.core.presentation.ui.theme.Divider
 import com.lihan.pagekeeper.core.presentation.ui.theme.Icons
 import com.lihan.pagekeeper.core.presentation.ui.theme.PageKeeperTheme
@@ -77,12 +80,16 @@ private fun SearchScreen(
 ) {
 
     Scaffold(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        containerColor = BGMain
     ) { it
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = BGMain
+                ),
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -146,7 +153,8 @@ private fun SearchScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f)
-                            .padding(horizontal = 16.dp)
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(state.items){ searchBookUi ->
                             BookSearchItem(

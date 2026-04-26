@@ -53,7 +53,7 @@ fun BookSelectBar(
         },
         title = {
             Text(
-                text = stringResource(R.string.selected,selectedSize),
+                text = stringResource(R.string.selected_books,selectedSize),
                 style = MaterialTheme.typography.title_M_Medium,
                 color = TextPrimary
             )

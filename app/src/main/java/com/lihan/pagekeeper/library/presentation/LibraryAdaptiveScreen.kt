@@ -2,6 +2,7 @@
 
 package com.lihan.pagekeeper.library.presentation
 
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -37,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lihan.pagekeeper.R
 import com.lihan.pagekeeper.core.presentation.components.BookSearchItem
@@ -56,6 +59,7 @@ import com.lihan.pagekeeper.core.presentation.ui.theme.TabletBlockBG
 import com.lihan.pagekeeper.core.presentation.ui.theme.TextSecondary
 import com.lihan.pagekeeper.core.presentation.ui.theme.title_M_Medium
 import com.lihan.pagekeeper.core.presentation.util.DeviceConfiguration
+import com.lihan.pagekeeper.core.presentation.util.shareUris
 import com.lihan.pagekeeper.library.presentation.components.LazyBookLayout
 import com.lihan.pagekeeper.library.presentation.components.LibraryTabletTopBar
 import com.lihan.pagekeeper.library.presentation.model.BookUi
@@ -66,6 +70,8 @@ fun LibraryAdaptiveScreenRoot(
     onMenuClick: () -> Unit,
     viewModel: LibraryViewModel
 ){
+    val context = LocalContext.current
+
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val filePick = rememberLauncherForActivityResult(
@@ -85,6 +91,18 @@ fun LibraryAdaptiveScreenRoot(
                 }
                 LibraryAction.MenuClick -> onMenuClick()
                 LibraryAction.SearchClick -> onSearchClick()
+                LibraryAction.SelectMode.ShareClick -> {
+                    val bookUris = state.items.filter { it.isSelected }.map { it.fileUriPath.toUri() }
+                    val arraylist = arrayListOf<Uri>()
+                    arraylist.addAll(bookUris)
+                    context.shareUris(arraylist)
+                }
+                is LibraryAction.ItemShareClick -> {
+                    val data = state.items.find { bookUi -> bookUi.id == action.id }
+                    if (data != null){
+                        context.shareUris(arrayListOf(data.fileUriPath.toUri()))
+                    }
+                }
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -206,14 +224,13 @@ private fun LibraryAdaptiveScreen(
                         onAction(LibraryAction.ItemSelectClick(id,isSelect))
                     },
                     onDeleteClick = {
-                        println("Delete ${it}")
                         onAction(LibraryAction.ItemDeleteClick(it))
                     },
                     onLongClick = {
-                        onAction(LibraryAction.ItemDeleteClick(it))
+                        onAction(LibraryAction.ItemLongClick(it))
                     },
                     onShareClick = {
-                        onAction(LibraryAction.ItemDeleteClick(it))
+                        onAction(LibraryAction.ItemShareClick(it))
                     }
                 )
 
