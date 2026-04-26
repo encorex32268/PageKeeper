@@ -2,4 +2,5 @@
 <paths>
     <external-path name="my_books" path="FB2" />
     <cache-path name="my_cache" path="." />
+    <files-path name="internal_books" path="books" />
 </paths>

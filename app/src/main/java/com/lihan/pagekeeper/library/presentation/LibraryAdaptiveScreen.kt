@@ -2,7 +2,7 @@
 
 package com.lihan.pagekeeper.library.presentation
 
-import android.net.Uri
+import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,23 +12,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -40,7 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lihan.pagekeeper.R
 import com.lihan.pagekeeper.core.presentation.components.BookSearchItem
@@ -51,16 +45,13 @@ import com.lihan.pagekeeper.core.presentation.components.DeleteAlertDialog
 import com.lihan.pagekeeper.core.presentation.components.PKNormalTopBar
 import com.lihan.pagekeeper.core.presentation.design_system.PKCircularProgressIndicator
 import com.lihan.pagekeeper.core.presentation.ui.theme.BGMain
-import com.lihan.pagekeeper.core.presentation.ui.theme.Black40
 import com.lihan.pagekeeper.core.presentation.ui.theme.Divider
-import com.lihan.pagekeeper.core.presentation.ui.theme.LoaderMain
-import com.lihan.pagekeeper.core.presentation.ui.theme.LoaderSecondary
 import com.lihan.pagekeeper.core.presentation.ui.theme.PageKeeperTheme
 import com.lihan.pagekeeper.core.presentation.ui.theme.TabletBlockBG
 import com.lihan.pagekeeper.core.presentation.ui.theme.TextSecondary
 import com.lihan.pagekeeper.core.presentation.ui.theme.title_M_Medium
 import com.lihan.pagekeeper.core.presentation.util.DeviceConfiguration
-import com.lihan.pagekeeper.core.presentation.util.shareUris
+import com.lihan.pagekeeper.core.presentation.util.shareUrisSafely
 import com.lihan.pagekeeper.library.presentation.components.LazyBookLayout
 import com.lihan.pagekeeper.library.presentation.components.LibraryTabletTopBar
 import com.lihan.pagekeeper.library.presentation.model.BookUi
@@ -76,9 +67,13 @@ fun LibraryAdaptiveScreenRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val filePick = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
         if (uri != null){
+            context.contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
             viewModel.onAction(LibraryAction.UpsertBook(uri))
         }
     }
@@ -88,20 +83,19 @@ fun LibraryAdaptiveScreenRoot(
         onAction = { action ->
             when(action){
                 LibraryAction.ImportBookClick -> {
-                    filePick.launch("*/*")
+                    filePick.launch(arrayOf("*/*"))
                 }
                 LibraryAction.MenuClick -> onMenuClick()
                 LibraryAction.SearchClick -> onSearchClick()
                 LibraryAction.SelectMode.ShareClick -> {
-                    val bookUris = state.items.filter { it.isSelected }.map { it.fileUriPath.toUri() }
-                    val arraylist = arrayListOf<Uri>()
-                    arraylist.addAll(bookUris)
-                    context.shareUris(arraylist)
+                    val bookUris = state.selectedBookUis.map { it.fileUriPath }
+                    context.shareUrisSafely(bookUris)
                 }
                 is LibraryAction.ItemShareClick -> {
+                    if (state.isSelectMode) return@LibraryAdaptiveScreen
                     val data = state.items.find { bookUi -> bookUi.id == action.id }
                     if (data != null){
-                        context.shareUris(arrayListOf(data.fileUriPath.toUri()))
+                        context.shareUrisSafely(listOf(data.fileUriPath))
                     }
                 }
                 else -> Unit
@@ -204,7 +198,7 @@ private fun LibraryAdaptiveScreen(
                     isLoading = state.isLoading,
                     modifier = if (isMobile) Modifier
                         .fillMaxSize()
-                        .padding(bottom = 64.dp) else Modifier.padding(bottom = 64.dp),
+                        .padding(bottom = 64.dp) else Modifier,
                     logoBackgroundColor = if (isMobile) Color.Transparent else BGMain,
                     painter = painterResource(R.drawable.logo),
                     onImportBookClick = {

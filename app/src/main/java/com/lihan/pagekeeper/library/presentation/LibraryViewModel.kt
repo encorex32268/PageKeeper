@@ -147,19 +147,26 @@ class LibraryViewModel(
             is LibraryAction.UpsertBook -> upsertBook(action.uri)
             LibraryAction.DeleteDialogConfirm -> {
                 val currentState = state.value
-                val selectedBookUis= ArrayList<BookUi>()
+                val booksToBeDeleted = mutableListOf<BookUi>()
+                
                 viewModelScope.launch {
-                    if (currentState.selectedBook != null){
-                        bookRepository.deleteBook(currentState.selectedBook.id)
-                        selectedBookUis.add(currentState.selectedBook)
-                    }else{
-                        val selectedIds = currentState.selectedBookUis.map { it.id }
-                        if (selectedIds.isEmpty()) return@launch
-                        bookRepository.deleteBooksByIds(selectedIds)
-                        selectedBookUis.addAll(currentState.selectedBookUis)
+                    if (currentState.selectedBook != null) {
+                        booksToBeDeleted.add(currentState.selectedBook)
+                    } else {
+                        booksToBeDeleted.addAll(currentState.selectedBookUis)
                     }
-                    val bookImagePaths = selectedBookUis.map { it.imageFilePath }
-                    fileManager.removeBitmap(bookImagePaths)
+
+                    if (booksToBeDeleted.isEmpty()) return@launch
+
+
+                    val pathsToDelete = mutableListOf<String>()
+                    booksToBeDeleted.forEach { book ->
+                        pathsToDelete.add(book.fileUriPath)
+                        pathsToDelete.add(book.imageFilePath)
+                    }
+
+                    bookRepository.deleteBooksByIds(booksToBeDeleted.map { it.id })
+                    fileManager.removeFiles(pathsToDelete)
 
                     _state.update {
                         it.copy(
@@ -206,8 +213,8 @@ class LibraryViewModel(
                 }
             }
 
-            LibraryAction.SelectMode.FavoriteClick -> {}
-            LibraryAction.SelectMode.ShareClick -> {}
+            LibraryAction.SelectMode.FavoriteClick -> Unit
+            LibraryAction.SelectMode.ShareClick -> Unit
 
         }
     }
@@ -233,6 +240,7 @@ class LibraryViewModel(
             }
             val coverByteArray = BitmapConverter.toByteArray(fB2Metadata.cover)
             val imageFilePath = fileManager.saveBitmapToDevice(coverByteArray)
+            val internalFileUriPath = fileManager.saveBook(uri)
 
 
             bookRepository.upsert(
@@ -241,7 +249,7 @@ class LibraryViewModel(
                     title = fB2Metadata.title ?: "",
                     author = fB2Metadata.author ?: "",
                     imageFilePath =imageFilePath,
-                    fileUriPath = uri.toString(),
+                    fileUriPath = internalFileUriPath,
                     isFavorite = false,
                     isReadFinished = false
                 )

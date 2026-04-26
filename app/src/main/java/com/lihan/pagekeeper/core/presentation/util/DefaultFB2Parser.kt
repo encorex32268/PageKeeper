@@ -27,8 +27,9 @@ class DefaultFB2Parser(
     override suspend fun parse(uri: Uri): FB2Metadata? {
         val mimeType = context.contentResolver.getType(uri)
 
-        val fileName = getFileNameFromContentUri(uri)?:return null
-
+        val fileName = context.getFileNameFromContentUri(uri)?:return null
+        println("FileName: ${fileName}")
+        println("uri: ${uri}")
         //Android check .fb2 always found application/octet-stream file.
         //So need check file name and mimeType.
         val fb2Type =  "application/x-fictionbook+xml"
@@ -107,20 +108,6 @@ class DefaultFB2Parser(
                 null
             }
         }
-    }
-
-    private fun getFileNameFromContentUri(uri: Uri): String? {
-        var name: String? = null
-
-        context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-            if (cursor.moveToFirst()) {
-                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if (nameIndex != -1) {
-                    name = cursor.getString(nameIndex)
-                }
-            }
-        }
-        return name
     }
 
     private fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
